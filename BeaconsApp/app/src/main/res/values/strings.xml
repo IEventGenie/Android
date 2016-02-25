@@ -4,4 +4,20 @@
     <string name="ble_not_supported">BLE not supported on this device.</string>
     <string name="label_device_name">Device Name</string>
     <string name="label_device_address">Device Address</string>
+
+
+<!-- activate event screen -->
+    <string name="activate_event">ACTIVATE EVENT</string>
+    <string name="my_events">MY EVENTS</string>
+    <string name="events_near_me">EVENTS NEAR ME</string>
+    <string name="all_event">ALL EVENTS</string>
+    <string name="confirmation_ed_hint">Enter Confirmation Code</string>
+
+    <!-- My Events -->
+    <string name="my_events_title">My Events</string>
+
+    <!-- Menu -->
+    <string name="logout">LOGOUT</string>
+
+
 </resources>

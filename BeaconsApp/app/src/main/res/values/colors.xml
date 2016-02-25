@@ -3,4 +3,16 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="orange_app_color">#F3522E</color>
+
+    <!-- Event List colors-->
+    <color name="event_list_title_color">#5D5D5D</color>
+    <color name="event_list_loc_color">#ACACAC</color>
+    <color name="my_event_screen_color">#F8F8F8</color>
+    <color name="my_event_list_div_color">#E9E9E9</color>
+
+    <color name="my_event_list_color_dark">#F8F8F8</color>
+    <color name="my_event_list_color_light">#FFFFFF</color>
+
 </resources>

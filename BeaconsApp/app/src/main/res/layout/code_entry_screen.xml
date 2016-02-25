@@ -1,0 +1,131 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/activate_event_screen"
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="70dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="42dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/enter_confirmation_code_input"
+            >
+
+            <EditText
+                android:id="@+id/code_ed"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_toLeftOf="@+id/scanner_btn"
+                android:paddingLeft="10dp"
+                android:singleLine="true"
+                android:imeOptions="actionGo"
+                android:hint="@string/confirmation_ed_hint"
+                android:textSize="13sp"
+                android:background="@android:color/transparent"
+                android:textColorHint="@android:color/white"
+                android:textColor="@android:color/white"
+                />
+
+            <LinearLayout
+                android:id="@+id/scanner_btn"
+                android:layout_width="42dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minHeight="42dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/scan_bar_code"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/activate_btn"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/activate_btn_back"
+            android:text="@string/activate_event"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:weightSum="90"
+        >
+
+        <TextView
+            android:id="@+id/my_event_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:text="@string/my_events"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:background="@color/orange_app_color"
+            />
+        <TextView
+            android:id="@+id/event_near_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:layout_marginLeft="0.5dp"
+            android:text="@string/events_near_me"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:background="@color/orange_app_color"
+            />
+        <TextView
+            android:id="@+id/all_event_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:layout_marginLeft="0.5dp"
+            android:text="@string/all_event"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:background="@color/orange_app_color"
+            />
+    </LinearLayout>
+
+
+
+</RelativeLayout>

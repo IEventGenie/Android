@@ -49,8 +49,7 @@ public class BeaconstacBroadcastReceiver extends BeaconstacReceiver {
 
     @Override
     public void exitedRegion(Context context, String region) {
-        notificationManager = (NotificationManager)
-                context.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager)context.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         Log.v(BeaconstacBroadcastReceiver.class.getName(), "Exited region " + region);
     }

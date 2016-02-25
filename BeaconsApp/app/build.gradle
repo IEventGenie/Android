@@ -29,4 +29,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.crittercism:crittercism-android-agent:5.0.6'
     compile project(':SlidingMenu')
+
 }
