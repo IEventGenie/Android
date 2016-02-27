@@ -3,7 +3,7 @@
  * 
  * Created by lisah0 on 2012-02-24
  */
-package com.beacons.app.beaconsapp;
+package com.beacons.app.qrcodescanner;
 
 import java.io.IOException;
 

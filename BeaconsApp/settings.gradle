@@ -1,3 +1,2 @@
-include ':app', ':SlidingMenu', ':qrcodereaderview'
+include ':app', ':SlidingMenu'
 project(':SlidingMenu').projectDir = new File('app/libs/SlidingMenu')
-project(':qrcodereaderview').projectDir = new File('app/libs/QRCodeReaderLib/qrcodereaderview')

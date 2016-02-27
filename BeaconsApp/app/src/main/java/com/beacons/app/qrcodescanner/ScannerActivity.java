@@ -4,18 +4,16 @@
  * 
  * Created by lisah0 on 2012-02-24
  */
-package com.beacons.app.beaconsapp;
+package com.beacons.app.qrcodescanner;
 
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.Button;
 
@@ -26,9 +24,11 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 
 import android.widget.TextView;
-import android.graphics.ImageFormat;
 
 /* Import ZBar Class files */
+
+import com.beacons.app.beaconsapp.R;
+import com.beacons.app.qrcodescanner.CameraPreview;
 
 import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;

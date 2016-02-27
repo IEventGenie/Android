@@ -23,6 +23,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:name=".Globals"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".SplashScreen"
@@ -43,7 +44,7 @@
 
         <activity android:name=".BeaconsListActivity" android:screenOrientation="portrait"></activity>
 
-        <activity android:name=".ScannerActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="com.beacons.app.qrcodescanner.ScannerActivity" android:screenOrientation="portrait"></activity>
 
         <receiver android:name="com.beacons.app.beacons.BeaconstacBroadcastReceiver" android:exported="false">
             <intent-filter>

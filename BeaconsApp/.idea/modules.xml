@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/BeaconsApp.iml" filepath="$PROJECT_DIR$/BeaconsApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/libs/SlidingMenu/SlidingMenu.iml" filepath="$PROJECT_DIR$/app/libs/SlidingMenu/SlidingMenu.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/libs/QRCodeReaderLib/qrcodereaderview/qrcodereaderview.iml" filepath="$PROJECT_DIR$/app/libs/QRCodeReaderLib/qrcodereaderview/qrcodereaderview.iml" />
     </modules>
   </component>
 </project>
