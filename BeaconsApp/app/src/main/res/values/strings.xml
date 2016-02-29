@@ -12,6 +12,7 @@
     <string name="events_near_me">EVENTS NEAR ME</string>
     <string name="all_event">ALL EVENTS</string>
     <string name="confirmation_ed_hint">Enter Confirmation Code</string>
+    <string name="last_name_ed_hint">Enter Last Name</string>
 
     <!-- My Events -->
     <string name="my_events_title">My Events</string>

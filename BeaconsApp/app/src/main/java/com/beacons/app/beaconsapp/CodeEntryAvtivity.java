@@ -15,7 +15,7 @@ import com.beacons.app.webservices.WebServiceHandler;
 
 public class CodeEntryAvtivity extends BaseActivity {
 
-    EditText codeEd;
+    EditText codeEd,lastEd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +28,12 @@ public class CodeEntryAvtivity extends BaseActivity {
     public void findViewsApplyAction()
     {
         codeEd = (EditText) findViewById(R.id.code_ed);
+        lastEd = (EditText) findViewById(R.id.last_name_ed);
 
         findViewById(R.id.activate_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            codeEd.setError(null);
-            String code = ""+codeEd.getText().toString();
-            if(code.length() == 0){
-                codeEd.setError("Code required!");
-            }else {
-                new ConfirmationCodeService(code).execute();
-            }
+                validate();
             }
         });
 
@@ -50,13 +45,31 @@ public class CodeEntryAvtivity extends BaseActivity {
         });
     }
 
+    public void validate() {
+        codeEd.setError(null);
+        lastEd.setError(null);
+
+        String code = ""+codeEd.getText().toString();
+        if(code.length() == 0){
+            codeEd.setError("Code required!");
+        }else {
+            String lastN = lastEd.getText().toString();
+            if(lastN.length() == 0){
+                lastEd.setError("Last name required!");
+            }else {
+                new ConfirmationCodeService(code,lastN).execute();
+            }
+        }
+    }
+
     public class ConfirmationCodeService extends AsyncTask<String,Integer,AppConstants.ResponseStatus>{
 
         ProgressDialog pd;
-        String confirmationCode;
+        String confirmationCode = "",lastName = "";
 
-        public ConfirmationCodeService(String confirmationCode) {
+        public ConfirmationCodeService(String confirmationCode,String lastN) {
             this.confirmationCode = confirmationCode;
+            this.lastName = lastN;
         }
 
         @Override
@@ -68,7 +81,7 @@ public class CodeEntryAvtivity extends BaseActivity {
         @Override
         protected AppConstants.ResponseStatus doInBackground(String... params) {
 
-            AppConstants.ResponseStatus res = WebServiceHandler.getEventsListByAccessCode(CodeEntryAvtivity.this,confirmationCode, "Aditya");
+            AppConstants.ResponseStatus res = WebServiceHandler.getEventsListByAccessCode(CodeEntryAvtivity.this,confirmationCode, lastName);
 
             return res;
         }

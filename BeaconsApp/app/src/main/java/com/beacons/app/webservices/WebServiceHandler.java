@@ -53,7 +53,7 @@ public class WebServiceHandler {
 
         try {
             String mkUrl = AppConstants.BASE_URL+AppConstants.GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL+
-                            confirmationCode+"&"+AppConstants.LAST_NAME+"="+lastname;
+                            confirmationCode+"&"+AppConstants.LAST_NAME_KEY+"="+lastname;
 
             Log.e("mkurl",""+mkUrl);
 
@@ -73,6 +73,9 @@ public class WebServiceHandler {
             String contentAsString = readIt(is);
 
             Log.e("Service response : ",":   "+contentAsString);
+
+
+
             returnStatus = AppConstants.ResponseStatus.OK;
 
         } catch (Exception e) {
