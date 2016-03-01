@@ -20,25 +20,25 @@ public class AttendeeDetailModel {
     public String EventId = "";
     public String AttendeeTypeId = "";
 
-    AttendeeDetailCommonModel CustomField1 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField2 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField3 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField4 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField5 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField6 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField7 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField8 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField9 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField10 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField11 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField12 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField13 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField14 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField15 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField16 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField17 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField18 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField19 = new AttendeeDetailCommonModel();
-    AttendeeDetailCommonModel CustomField20 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField1 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField2 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField3 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField4 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField5 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField6 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField7 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField8 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField9 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField10 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField11 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField12 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField13 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField14 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField15 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField16 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField17 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField18 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField19 = new AttendeeDetailCommonModel();
+    public AttendeeDetailCommonModel CustomField20 = new AttendeeDetailCommonModel();
 
 }

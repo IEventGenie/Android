@@ -6,13 +6,15 @@
     <string name="label_device_address">Device Address</string>
 
 
-<!-- activate event screen -->
+    <!-- activate event screen -->
     <string name="activate_event">ACTIVATE EVENT</string>
     <string name="my_events">MY EVENTS</string>
     <string name="events_near_me">EVENTS NEAR ME</string>
     <string name="all_event">ALL EVENTS</string>
     <string name="confirmation_ed_hint">Enter Confirmation Code</string>
     <string name="last_name_ed_hint">Enter Last Name</string>
+    <string name="last_name_req_error">Last name required!</string>
+    <string name="confirm_code_req_error">Code required!</string>
 
     <!-- My Events -->
     <string name="my_events_title">My Events</string>

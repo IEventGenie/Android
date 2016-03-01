@@ -21,6 +21,22 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"/>
 
+        <EditText
+            android:id="@+id/last_name_ed"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="10dp"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:layout_marginTop="15dp"
+            android:hint="@string/last_name_ed_hint"
+            android:textSize="13sp"
+            android:textColorHint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:background="@drawable/enter_confirmation_code_input"
+            />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,9 +52,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:layout_toLeftOf="@+id/scanner_btn"
-                android:paddingLeft="10dp"
+                android:paddingLeft="15dp"
                 android:singleLine="true"
-                android:imeOptions="actionNext"
+                android:imeOptions="actionDone"
                 android:hint="@string/confirmation_ed_hint"
                 android:textSize="13sp"
                 android:background="@android:color/transparent"
@@ -64,22 +80,6 @@
             </LinearLayout>
 
         </RelativeLayout>
-
-        <EditText
-            android:id="@+id/last_name_ed"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:singleLine="true"
-            android:imeOptions="actionGo"
-            android:layout_marginTop="15dp"
-            android:hint="@string/last_name_ed_hint"
-            android:textSize="13sp"
-            android:textColorHint="@android:color/white"
-            android:textColor="@android:color/white"
-            android:background="@drawable/enter_confirmation_code_input"
-            />
 
         <TextView
             android:id="@+id/activate_btn"

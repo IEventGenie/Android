@@ -16,7 +16,6 @@
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/icon"
         />
 
 
@@ -36,7 +35,6 @@
             android:textSize="14sp"
             android:paddingLeft="5dp"
             android:textColor="@color/event_list_title_color"
-            android:text="APPI Anual Convention"
             />
 
         <LinearLayout
@@ -59,7 +57,6 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/event_list_loc_color"
-                android:text="Nellis AFB-Nellis AFB,NV"
                 />
 
         </LinearLayout>
@@ -84,7 +81,6 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/event_list_loc_color"
-                android:text="20 Feb, 2016"
                 />
 
         </LinearLayout>

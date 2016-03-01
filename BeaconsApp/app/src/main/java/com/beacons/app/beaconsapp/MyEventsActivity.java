@@ -17,8 +17,11 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.slidingmenu.SlidingMenuSetup;
+import com.beacons.app.utilities.CircleTransform;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.squareup.picasso.Picasso;
 
 import java.io.LineNumberReader;
 
@@ -67,16 +70,21 @@ public class MyEventsActivity extends BaseActivity {
     {
         LayoutInflater inflater;
         int darkBack,lightBack;
+        Globals global;
+        EventDetailMainModel dataModel;
 
         public EventsAdapter(Context c) {
             inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             darkBack = getResources().getColor(R.color.my_event_list_color_dark);
             lightBack = getResources().getColor(R.color.my_event_list_color_light);
+
+            global = (Globals) c.getApplicationContext();
+            dataModel = global.getEventDetailMainModel();
         }
 
         @Override
         public int getCount() {
-            return 5;
+            return 1;
         }
 
         @Override
@@ -115,6 +123,24 @@ public class MyEventsActivity extends BaseActivity {
             }else{
                 convertView.setBackgroundColor(lightBack);
             }
+
+            holder.title.setText(""+dataModel.detailModel.Ev_Nm);
+            holder.location.setText("" + dataModel.detailModel.Ev_Addr_1_Txt + "," + dataModel.detailModel.Ev_City_Txt);
+            Picasso.with(MyEventsActivity.this)
+                    .load(""+dataModel.detailModel.Ev_Img_Url)
+                    .transform(new CircleTransform())
+                    .placeholder(R.drawable.icon)
+                    .into(holder.eventImg);
+            try {
+                String date = "" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm;
+                date = date.split("T")[0];
+                holder.date.setText(date);
+            }catch (Exception e){
+                System.out.println(e.getStackTrace());
+                holder.date.setText("" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+            }
+
+
 
             return convertView;
         }

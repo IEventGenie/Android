@@ -45,6 +45,7 @@ public class HomeActivity extends BaseActivity {
     SlidingMenu menu;
     RelativeLayout actionBar;
     WebView webView;
+    Globals global;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +56,24 @@ public class HomeActivity extends BaseActivity {
         actionBar.findViewById(R.id.menu_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(menu != null)
-                menu.showMenu(true);
+                if (menu != null)
+                    menu.showMenu(true);
             }
         });
 
         menu = new SlidingMenuSetup(HomeActivity.this).setSlidingMenu();
 
+        global = (Globals) getApplicationContext();
+
+        setWebView();
+
+    }
+
+    public void setWebView(){
         webView = (WebView)findViewById(R.id.web_view);
         webView.setWebViewClient(new MyBrowser());
 
-        String url = "http://www.google.com";
+        String url = ""+global.getEventDetailMainModel().detailModel.Ev_Web_Url;
 
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.getSettings().setJavaScriptEnabled(true);

@@ -3,7 +3,7 @@ package com.beacons.app.WebserviceDataModels;
 /**
  * Created by aman on 2/29/16.
  */
-public class EventDetailMobileCheckinSettings {
+public class EventDetailMobileCheckinSettingsModel {
 
     public boolean Custm_Fld_1_Sel_In;
     public boolean Custm_Fld_2_Sel_In;

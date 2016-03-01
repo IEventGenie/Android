@@ -3,8 +3,11 @@ package com.beacons.app.slidingmenu;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
+import android.widget.TextView;
 
+import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.beaconsapp.BeaconsListActivity;
+import com.beacons.app.beaconsapp.Globals;
 import com.beacons.app.beaconsapp.HomeActivity;
 import com.beacons.app.beaconsapp.R;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -16,9 +19,11 @@ public class SlidingMenuSetup {
 
     Activity attachToAct;
     SlidingMenu menu;
+    Globals global;
 
     public SlidingMenuSetup(Activity act) {
         attachToAct = act;
+        global = (Globals) act.getApplicationContext();
     }
 
     public SlidingMenu setSlidingMenu()
@@ -33,6 +38,12 @@ public class SlidingMenuSetup {
         menu.attachToActivity(attachToAct, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu);
 
+        setUpData();
+
+        return menu;
+    }
+
+    public void setUpData(){
         menu.findViewById(R.id.beacons_menu_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,6 +53,10 @@ public class SlidingMenuSetup {
             }
         });
 
-        return menu;
+        EventDetailMainModel dataModel = global.getEventDetailMainModel();
+
+        TextView name = (TextView)menu.findViewById(R.id.user_name);
+        name.setText(""+dataModel.attendeeDetail.FirstName+" "+dataModel.attendeeDetail.LastName);
+
     }
 }

@@ -3,7 +3,7 @@ package com.beacons.app.constants;
 /**
  * Created by aman on 2/27/16.
  */
-public class AppConstants {
+public class GlobalConstants {
 
     public enum ResponseStatus
     {
@@ -116,6 +116,7 @@ public class AppConstants {
     public static final String STATUS = "Status";
     public static final String EVENT_ID = "EventId";
     public static final String ATTENDEE_TYPE_ID = "AttendeeTypeId";
+    public static final String CUSTOME_FIELD = "CustomField";
     public static final String CUSTOME_FIELD_1 = "CustomField1";
     public static final String CUSTOME_FIELD_2 = "CustomField2";
     public static final String CUSTOME_FIELD_3 = "CustomField3";

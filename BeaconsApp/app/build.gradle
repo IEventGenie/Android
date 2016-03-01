@@ -17,6 +17,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        pickFirst 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/maven/com.squareup.picasso/picasso/pom.xml'
+        exclude 'META-INF/maven/com.squareup.picasso/picasso/pom.properties'
+    }
 }
 
 dependencies {
@@ -31,4 +39,6 @@ dependencies {
     compile project(':SlidingMenu')
     compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:1.0.0'
     compile files('libs/zbar.jar')
+    compile files('libs/picasso-2.5.2.jar')
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

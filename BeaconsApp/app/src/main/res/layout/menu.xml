@@ -46,7 +46,6 @@
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="8dp"
                         android:textColor="@android:color/white"
-                        android:text="Demon Salvatore"
                         android:textSize="17sp"
                         />
 
