@@ -61,12 +61,18 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        actionBar.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HomeActivity.this.finish();
+            }
+        });
+
         menu = new SlidingMenuSetup(HomeActivity.this).setSlidingMenu();
 
         global = (Globals) getApplicationContext();
 
         setWebView();
-
     }
 
     public void setWebView(){

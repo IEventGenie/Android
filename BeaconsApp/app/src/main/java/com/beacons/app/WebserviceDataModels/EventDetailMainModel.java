@@ -20,7 +20,7 @@ public class EventDetailMainModel {
     //==================
 
     //Category details==
-    public CategoryTypeModel categoryDetail = new CategoryTypeModel();
+    public ArrayList<CategoryTypeModel> categoryDetail = new ArrayList<CategoryTypeModel>();
     //==================
 
 }

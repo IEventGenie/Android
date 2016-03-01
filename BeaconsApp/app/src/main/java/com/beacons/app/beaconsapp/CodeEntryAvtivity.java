@@ -95,7 +95,7 @@ public class CodeEntryAvtivity extends BaseActivity {
             pd.dismiss();
             if(status == GlobalConstants.ResponseStatus.OK) {
                 startActivity(new Intent(CodeEntryAvtivity.this, MyEventsActivity.class));
-                CodeEntryAvtivity.this.finish();
+                //CodeEntryAvtivity.this.finish();
             }else if(status == GlobalConstants.ResponseStatus.AuthorisationRequired) {
 
             }else {

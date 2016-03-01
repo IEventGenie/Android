@@ -2,6 +2,8 @@ package com.beacons.app.webservices;
 
 import com.beacons.app.WebserviceDataModels.AttendeeDetailCommonModel;
 import com.beacons.app.WebserviceDataModels.AttendeeDetailModel;
+import com.beacons.app.WebserviceDataModels.CategoryCommonModel;
+import com.beacons.app.WebserviceDataModels.CategoryTypeModel;
 import com.beacons.app.WebserviceDataModels.EventDetailCommonModel;
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.WebserviceDataModels.EventDetailMobileCheckinSettingsModel;
@@ -405,16 +407,135 @@ public class ResponseParser {
 
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_1))
             {
-                JSONObject inJob = attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_1);
-
-                attDetModel.CustomField1 =
+                attDetModel.CustomField1 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_1));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_2))
+            {
+                attDetModel.CustomField2 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_2));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_3))
+            {
+                attDetModel.CustomField3 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_3));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_4))
+            {
+                attDetModel.CustomField4 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_4));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_5))
+            {
+                attDetModel.CustomField5 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_5));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_6))
+            {
+                attDetModel.CustomField6 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_6));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_7))
+            {
+                attDetModel.CustomField7 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_7));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_8))
+            {
+                attDetModel.CustomField8 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_8));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_9))
+            {
+                attDetModel.CustomField9 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_9));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_10))
+            {
+                attDetModel.CustomField10 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_10));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_11))
+            {
+                attDetModel.CustomField11 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_11));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_12))
+            {
+                attDetModel.CustomField12 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_12));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_13))
+            {
+                attDetModel.CustomField13 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_13));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_14))
+            {
+                attDetModel.CustomField14 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_14));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_15))
+            {
+                attDetModel.CustomField15 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_15));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_16))
+            {
+                attDetModel.CustomField16 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_16));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_17))
+            {
+                attDetModel.CustomField17 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_17));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_18))
+            {
+                attDetModel.CustomField18 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_18));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_19))
+            {
+                attDetModel.CustomField19 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_19));
+            }
+            if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_20))
+            {
+                attDetModel.CustomField20 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_20));
             }
 
-
             returnModel.attendeeDetail = attDetModel;
-
             //=====Attendee Detail Parsing End====
 
+            //=====Category Type Parsing Start====
+            if(mainObj.has(GlobalConstants.CATEGORY_TYPES)){
+                JSONArray catTypeArr = mainObj.getJSONArray(GlobalConstants.CATEGORY_TYPES);
+
+                ArrayList<CategoryTypeModel> catModels = new ArrayList<CategoryTypeModel>();
+
+                for (int i = 0; i < catTypeArr.length(); i++) {
+                    CategoryTypeModel model = new CategoryTypeModel();
+
+                    JSONObject catDetObj = catTypeArr.getJSONObject(0);
+                    ArrayList<CategoryCommonModel> childModels = new ArrayList<CategoryCommonModel>();
+
+                    if(catDetObj.has(GlobalConstants.CHILDREN)){
+
+                        JSONArray childArr = catDetObj.getJSONArray(GlobalConstants.CHILDREN);
+                        for (int j = 0; j < childArr.length(); j++) {
+                            JSONObject childJob = childArr.getJSONObject(j);
+                            CategoryCommonModel inmodel = new CategoryCommonModel();
+                            if(childJob.has(GlobalConstants.ID)){
+                                inmodel.Id = childJob.getString(GlobalConstants.ID);
+                            }
+                            if(childJob.has(GlobalConstants.TEXT)){
+                                inmodel.Text = childJob.getString(GlobalConstants.TEXT);
+                            }
+                            childModels.add(inmodel);
+                        }
+                    }
+
+                    model.childrenModels = childModels;
+
+                    CategoryCommonModel outmodel = new CategoryCommonModel();
+
+                    if(catDetObj.has(GlobalConstants.ID)){
+                        outmodel.Id = catDetObj.getString(GlobalConstants.ID);
+                    }
+                    if(catDetObj.has(GlobalConstants.TEXT)){
+                        outmodel.Text = catDetObj.getString(GlobalConstants.TEXT);
+                    }
+
+                    model.categoryDetail = outmodel;
+
+                    catModels.add(model);
+                }
+
+                returnModel.categoryDetail = catModels;
+            }
+            //=====Category Type Parsing Start====
 
         }catch (Exception e){
             System.out.println(e.getStackTrace());
@@ -429,6 +550,12 @@ public class ResponseParser {
         try {
             if (job.has(GlobalConstants.LABEL)) {
                 model.Label = job.getString(GlobalConstants.LABEL);
+            }
+            if (job.has(GlobalConstants.VALUE)) {
+                model.Value = job.getString(GlobalConstants.VALUE);
+            }
+            if (job.has(GlobalConstants.IS_ENABLED)) {
+                model.IsEnabled = job.getBoolean(GlobalConstants.IS_ENABLED);
             }
         }catch (Exception e){
             System.out.println(e.getStackTrace());

@@ -48,6 +48,13 @@ public class MyEventsActivity extends BaseActivity {
         actionBar = (RelativeLayout)findViewById(R.id.actionbar);
         actionBar.findViewById(R.id.menu_icon).setVisibility(View.GONE);
         ((TextView)actionBar.findViewById(R.id.title)).setText(getResources().getString(R.string.my_events_title));
+
+        actionBar.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyEventsActivity.this.finish();
+            }
+        });
     }
 
     public void findViewsApplyActions() {

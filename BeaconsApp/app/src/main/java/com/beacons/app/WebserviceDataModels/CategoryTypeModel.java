@@ -7,6 +7,6 @@ import java.util.ArrayList;
  */
 public class CategoryTypeModel {
 
-    ArrayList<CategoryCommonModel> childrenModels = new ArrayList<CategoryCommonModel>();
-    CategoryCommonModel categoryDetail = new CategoryCommonModel();
+    public ArrayList<CategoryCommonModel> childrenModels = new ArrayList<CategoryCommonModel>();
+    public CategoryCommonModel categoryDetail = new CategoryCommonModel();
 }

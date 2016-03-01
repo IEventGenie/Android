@@ -44,6 +44,8 @@
 
         <activity android:name=".BeaconsListActivity" android:screenOrientation="portrait"></activity>
 
+        <activity android:name=".MenuDetails" android:screenOrientation="portrait"></activity>
+
         <activity android:name="com.beacons.app.qrcodescanner.ScannerActivity" android:screenOrientation="portrait"></activity>
 
         <receiver android:name="com.beacons.app.beacons.BeaconstacBroadcastReceiver" android:exported="false">
