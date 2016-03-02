@@ -11,13 +11,89 @@
         layout="@layout/action_bar"
         />
 
-
-    <ListView
-        android:id="@+id/my_event_list"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:dividerHeight="0.5dp"
-        android:divider="@color/my_event_list_div_color"
-        />
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@color/tab_div_color"
+        android:weightSum="100"
+        >
+
+        <RelativeLayout
+            android:id="@+id/active_event_btn"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
+
+            <TextView
+                android:id="@+id/active_event_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textSize="15sp"
+                android:text="@string/active_events_tab"
+                android:textColor="@color/tab_selected_text_color"
+                />
+            <View
+                android:id="@+id/active_ev_tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/orange_app_color"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/past_event_btn"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_marginLeft="1dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
+
+            <TextView
+                android:id="@+id/past_event_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textSize="15sp"
+                android:text="@string/past_events_tab"
+                android:textColor="@color/tab_unselected_text_color"
+                />
+            <View
+                android:id="@+id/past_ev_tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"
+                android:background="@color/orange_app_color"
+                />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/active_event_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="0.5dp"
+            android:divider="@color/my_event_list_div_color"
+            />
+
+        <ListView
+            android:id="@+id/past_event_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="0.5dp"
+            android:visibility="gone"
+            android:divider="@color/my_event_list_div_color"
+            />
+
+    </RelativeLayout>
 
 </LinearLayout>

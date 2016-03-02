@@ -2,36 +2,34 @@ package com.beacons.app.beaconsapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
-import com.beacons.app.slidingmenu.SlidingMenuSetup;
 import com.beacons.app.utilities.CircleTransform;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.squareup.picasso.Picasso;
-
-import java.io.LineNumberReader;
 
 
 public class MyEventsActivity extends BaseActivity {
 
 
     RelativeLayout actionBar;
-    ListView eventsList;
+    ListView activeEventsList,pastEventsList;
     EventsAdapter adapter;
+    RelativeLayout activeTab,pastTab;
+    TextView activeText,pastText;
+    View activeTabStrip,pastTabStrip;
+    final int ActiveTabConst = 1;
+    final int PastTabConst = 2;
+    int CurrentTab = ActiveTabConst;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +44,8 @@ public class MyEventsActivity extends BaseActivity {
 
     public void configActionBar() {
         actionBar = (RelativeLayout)findViewById(R.id.actionbar);
-        actionBar.findViewById(R.id.menu_icon).setVisibility(View.GONE);
+        actionBar.findViewById(R.id.menu_icon).setVisibility(View.INVISIBLE);
+
         ((TextView)actionBar.findViewById(R.id.title)).setText(getResources().getString(R.string.my_events_title));
 
         actionBar.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
@@ -59,19 +58,65 @@ public class MyEventsActivity extends BaseActivity {
 
     public void findViewsApplyActions() {
 
-        eventsList = (ListView) findViewById(R.id.my_event_list);
-        adapter = new EventsAdapter(this);
-        eventsList.setAdapter(adapter);
+        activeEventsList = (ListView) findViewById(R.id.active_event_list);
+        pastEventsList = (ListView) findViewById(R.id.past_event_list);
 
-        eventsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        adapter = new EventsAdapter(this);
+        activeEventsList.setAdapter(adapter);
+
+        activeEventsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(MyEventsActivity.this,HomeActivity.class));
+                startActivity(new Intent(MyEventsActivity.this, HomeActivity.class));
+            }
+        });
+
+        activeTab = (RelativeLayout) findViewById(R.id.active_event_btn);
+        pastTab = (RelativeLayout) findViewById(R.id.past_event_btn);
+
+        activeText = (TextView) findViewById(R.id.active_event_txt);
+        pastText = (TextView) findViewById(R.id.past_event_txt);
+
+        activeTabStrip = (View) findViewById(R.id.active_ev_tab_strip);
+        pastTabStrip = (View) findViewById(R.id.past_ev_tab_strip);
+
+        activeTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(CurrentTab != ActiveTabConst) {
+                    activeEventsList.setVisibility(View.VISIBLE);
+                    pastEventsList.setVisibility(View.GONE);
+
+                    activeText.setTextColor(getResources().getColor(R.color.tab_selected_text_color));
+                    pastText.setTextColor(getResources().getColor(R.color.tab_unselected_text_color));
+
+                    activeTabStrip.setVisibility(View.VISIBLE);
+                    pastTabStrip.setVisibility(View.GONE);
+
+                    CurrentTab = ActiveTabConst;
+                }
+            }
+        });
+
+        pastTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(CurrentTab != PastTabConst) {
+                    pastEventsList.setVisibility(View.VISIBLE);
+                    activeEventsList.setVisibility(View.GONE);
+
+                    pastText.setTextColor(getResources().getColor(R.color.tab_selected_text_color));
+                    activeText.setTextColor(getResources().getColor(R.color.tab_unselected_text_color));
+
+                    pastTabStrip.setVisibility(View.VISIBLE);
+                    activeTabStrip.setVisibility(View.GONE);
+
+                    CurrentTab = PastTabConst;
+                }
             }
         });
 
     }
-
 
     public class EventsAdapter extends BaseAdapter
     {
@@ -146,8 +191,6 @@ public class MyEventsActivity extends BaseActivity {
                 System.out.println(e.getStackTrace());
                 holder.date.setText("" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
             }
-
-
 
             return convertView;
         }

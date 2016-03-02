@@ -15,4 +15,10 @@
     <color name="my_event_list_color_dark">#F8F8F8</color>
     <color name="my_event_list_color_light">#FFFFFF</color>
 
+    <!-- Event List Tabs-->
+    <color name="tab_div_color">#EDEDED</color>
+    <color name="tab_unselected_text_color">#6A6A6A</color>
+    <color name="tab_selected_text_color">#000000</color>
+
+
 </resources>

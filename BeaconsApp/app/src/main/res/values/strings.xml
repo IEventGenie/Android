@@ -15,12 +15,18 @@
     <string name="last_name_ed_hint">Enter Last Name</string>
     <string name="last_name_req_error">Last name required!</string>
     <string name="confirm_code_req_error">Code required!</string>
+    <string name="lastname_code_wrong">Lastname or confirmation code is wrong!</string>
 
     <!-- My Events -->
     <string name="my_events_title">My Events</string>
+    <string name="active_events_tab">Active Events</string>
+    <string name="past_events_tab">Past Events</string>
 
     <!-- Menu -->
     <string name="logout">LOGOUT</string>
+
+
+
 
 
 </resources>

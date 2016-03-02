@@ -7,6 +7,9 @@ import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.beaconsapp.Globals;
 import com.beacons.app.constants.GlobalConstants;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,10 +81,20 @@ public class WebServiceHandler {
 
             Log.e("Service response : ", ":   " + contentAsString);
 
-            EventDetailMainModel resultModel = ResponseParser.parseResponseOfEventDetails(contentAsString);
-            global.setEventDetailMainModel(resultModel);
+            if(contentAsString.length() > 0){
+                JSONObject job = new JSONObject(contentAsString);
+                JSONArray eventDet = job.getJSONArray(GlobalConstants.EVENT_DETAILS);
+                if(eventDet != null && eventDet.length() > 0){
+                    EventDetailMainModel resultModel = ResponseParser.parseResponseOfEventDetails(contentAsString);
+                    global.setEventDetailMainModel(resultModel);
+                    returnStatus = GlobalConstants.ResponseStatus.OK;
+                }else{
+                    returnStatus = GlobalConstants.ResponseStatus.Fail;
+                }
+            }else{
+                returnStatus = GlobalConstants.ResponseStatus.Fail;
+            }
 
-            returnStatus = GlobalConstants.ResponseStatus.OK;
         } catch (Exception e) {
             e.printStackTrace();
             returnStatus = GlobalConstants.ResponseStatus.Fail;

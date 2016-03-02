@@ -3,16 +3,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/my_event_list_div_color"
     >
 
     <include
         android:id="@+id/actionbar"
-        layout="@layout/action_bar"
+        layout="@layout/action_bar_white"
         />
 
-    <WebView
-        android:id="@+id/web_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            style="@android:style/Widget.DeviceDefault.ProgressBar.Large"
+            />
+
+        <WebView
+            android:id="@+id/web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            />
+    </RelativeLayout>
 
 </LinearLayout>

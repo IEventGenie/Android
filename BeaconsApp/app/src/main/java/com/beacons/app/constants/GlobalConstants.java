@@ -12,6 +12,10 @@ public class GlobalConstants {
         AuthorisationRequired
     }
 
+    //==COMMON==
+    public static final String SCANNED_CODE_RESULT = "scanned_code_result";
+    //==========
+
     //URLS====
     public static final String BASE_URL = "https://dev.icheckingenie.com/";
     public static final String GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL = "DesktopModules/CheckinService/API/iCheckinEvents/GetAllEventAttendeeDetailByConfirmationCode?confirmationCode=";

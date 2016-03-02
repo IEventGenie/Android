@@ -4,9 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.beacons.app.constants.GlobalConstants;
 import com.beacons.app.qrcodescanner.ScannerActivity;
@@ -16,6 +18,7 @@ import com.beacons.app.webservices.WebServiceHandler;
 public class CodeEntryAvtivity extends BaseActivity {
 
     EditText codeEd,lastEd;
+    public final int requestCode = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +43,24 @@ public class CodeEntryAvtivity extends BaseActivity {
         findViewById(R.id.scanner_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CodeEntryAvtivity.this, ScannerActivity.class));
+                startActivityForResult(new Intent(CodeEntryAvtivity.this, ScannerActivity.class), requestCode);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == this.requestCode){
+            if(resultCode == RESULT_OK){
+                try {
+                    String result = "" + data.getStringExtra(GlobalConstants.SCANNED_CODE_RESULT);
+                    codeEd.setText(result);
+                }catch (Exception e){
+                    System.out.println(e.getStackTrace());
+                }
+            }
+        }
     }
 
     public void validate() {
@@ -98,8 +116,8 @@ public class CodeEntryAvtivity extends BaseActivity {
                 //CodeEntryAvtivity.this.finish();
             }else if(status == GlobalConstants.ResponseStatus.AuthorisationRequired) {
 
-            }else {
-
+            }else if(status == GlobalConstants.ResponseStatus.Fail){
+                Toast.makeText(CodeEntryAvtivity.this, getResources().getString(R.string.lastname_code_wrong),Toast.LENGTH_LONG).show();
             }
         }
     }

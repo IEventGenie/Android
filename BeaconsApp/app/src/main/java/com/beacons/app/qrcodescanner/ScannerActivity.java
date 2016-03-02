@@ -8,10 +8,12 @@ package com.beacons.app.qrcodescanner;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 /* Import ZBar Class files */
 
 import com.beacons.app.beaconsapp.R;
+import com.beacons.app.constants.GlobalConstants;
 import com.beacons.app.qrcodescanner.CameraPreview;
 
 import net.sourceforge.zbar.Image;
@@ -124,25 +127,33 @@ public class ScannerActivity extends Activity
 
     PreviewCallback previewCb = new PreviewCallback() {
             public void onPreviewFrame(byte[] data, Camera camera) {
-                Parameters parameters = camera.getParameters();
-                Size size = parameters.getPreviewSize();
+            Parameters parameters = camera.getParameters();
+            Size size = parameters.getPreviewSize();
 
-                Image barcode = new Image(size.width, size.height, "Y800");
-                barcode.setData(data);
+            Image barcode = new Image(size.width, size.height, "Y800");
+            barcode.setData(data);
 
-                int result = scanner.scanImage(barcode);
+            int result = scanner.scanImage(barcode);
 
-                if (result != 0) {
-                    previewing = false;
-                    mCamera.setPreviewCallback(null);
-                    mCamera.stopPreview();
-                    
-                    SymbolSet syms = scanner.getResults();
-                    for (Symbol sym : syms) {
-                        scanText.setText("barcode result " + sym.getData());
-                        barcodeScanned = true;
-                    }
+            if (result != 0) {
+                previewing = false;
+                mCamera.setPreviewCallback(null);
+                mCamera.stopPreview();
+
+                SymbolSet syms = scanner.getResults();
+                String res = "";
+                for (Symbol sym : syms) {
+                    scanText.setText(""+sym.getData());
+                    res = sym.getData();
+                    Log.e("Scanned Data : " ,""+res);
+                    barcodeScanned = true;
                 }
+
+                Intent intent=new Intent();
+                intent.putExtra(GlobalConstants.SCANNED_CODE_RESULT,res);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
             }
         };
 
