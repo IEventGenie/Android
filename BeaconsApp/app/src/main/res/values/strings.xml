@@ -21,6 +21,7 @@
     <string name="my_events_title">My Events</string>
     <string name="active_events_tab">Active Events</string>
     <string name="past_events_tab">Past Events</string>
+    <string name="pre_chkin">Pre Checkin</string>
 
     <!-- Menu -->
     <string name="logout">LOGOUT</string>

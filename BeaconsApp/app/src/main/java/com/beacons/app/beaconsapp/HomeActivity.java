@@ -1,42 +1,22 @@
 package com.beacons.app.beaconsapp;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.slidingmenu.SlidingMenuSetup;
+import com.beacons.app.utilities.CircleTransform;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.mobstac.beaconstac.core.Beaconstac;
-import com.mobstac.beaconstac.core.BeaconstacReceiver;
-import com.mobstac.beaconstac.core.MSConstants;
-import com.mobstac.beaconstac.core.MSPlace;
-import com.mobstac.beaconstac.core.PlaceSyncReceiver;
-import com.mobstac.beaconstac.models.MSAction;
-import com.mobstac.beaconstac.models.MSBeacon;
-import com.mobstac.beaconstac.models.MSCard;
-import com.mobstac.beaconstac.models.MSMedia;
-import com.mobstac.beaconstac.utils.MSException;
-import com.mobstac.beaconstac.utils.MSLogger;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.squareup.picasso.Picasso;
 
 
 public class HomeActivity extends BaseActivity {
@@ -46,11 +26,15 @@ public class HomeActivity extends BaseActivity {
     RelativeLayout actionBar;
     WebView webView;
     Globals global;
+    ImageView eventImg;
+    TextView titleTxt,location,date;
+    EventDetailMainModel dataModel;
+    ProgressBar progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.home_screen);
 
         actionBar = (RelativeLayout)findViewById(R.id.actionbar);
         actionBar.findViewById(R.id.menu_icon).setOnClickListener(new View.OnClickListener() {
@@ -71,28 +55,68 @@ public class HomeActivity extends BaseActivity {
         menu = new SlidingMenuSetup(HomeActivity.this).setSlidingMenu();
 
         global = (Globals) getApplicationContext();
+        dataModel = global.getEventDetailMainModel();
+
+        progress = (ProgressBar) findViewById(R.id.progressBar);
+        progress.setMax(100);
 
         setWebView();
+        setEventData();
     }
 
     public void setWebView(){
         webView = (WebView)findViewById(R.id.web_view);
-        webView.setWebViewClient(new MyBrowser());
+        //webView.setWebViewClient(new MyBrowser());
+        webView.setWebChromeClient(new MyBrowser());
 
-        String url = ""+global.getEventDetailMainModel().detailModel.Ev_Web_Url;
+        String url = ""+dataModel.detailModel.Ev_Web_Url;
 
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         webView.loadUrl(url);
+
+        progress.setProgress(0);
     }
 
-    private class MyBrowser extends WebViewClient {
+    private class MyBrowser extends WebChromeClient {
         @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return true;
+        public void onProgressChanged(WebView view, int newProgress) {
+            HomeActivity.this.progress.setProgress(newProgress);
+            super.onProgressChanged(view, newProgress);
+            if(newProgress < 100){
+                HomeActivity.this.progress.setVisibility(View.VISIBLE);
+            }else{
+                HomeActivity.this.progress.setVisibility(View.GONE);
+            }
         }
     }
 
+    public void setEventData(){
+        try {
+            eventImg = (ImageView) findViewById(R.id.event_img);
+            titleTxt = (TextView) findViewById(R.id.title_sec);
+            location = (TextView) findViewById(R.id.location);
+            date = (TextView) findViewById(R.id.date);
+
+            titleTxt.setText("" + dataModel.detailModel.Ev_Nm);
+
+            location.setText("" + dataModel.detailModel.Ev_Addr_1_Txt + "," + dataModel.detailModel.Ev_City_Txt);
+            Picasso.with(HomeActivity.this)
+                    .load("" + dataModel.detailModel.Ev_Img_Url)
+                    .transform(new CircleTransform())
+                    .placeholder(R.drawable.icon)
+                    .into(eventImg);
+            try {
+                String dd = "" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm;
+                dd = dd.split("T")[0];
+                date.setText(dd);
+            } catch (Exception e) {
+                System.out.println(e.getStackTrace());
+                date.setText("" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
+    }
 }

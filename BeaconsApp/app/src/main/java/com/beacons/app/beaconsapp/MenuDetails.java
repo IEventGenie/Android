@@ -18,7 +18,8 @@ public class MenuDetails extends BaseActivity {
         setContentView(R.layout.menu_detail);
 
         actionBar = (RelativeLayout)findViewById(R.id.actionbar);
-        actionBar.findViewById(R.id.menu_icon).setVisibility(View.GONE);
+        actionBar.findViewById(R.id.menu_icon).setVisibility(View.INVISIBLE);
+        actionBar.findViewById(R.id.notification_icon).setVisibility(View.INVISIBLE);
 
         actionBar.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
             @Override
