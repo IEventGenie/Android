@@ -148,6 +148,7 @@ public class BeaconsListActivity extends BaseActivity {
         registerBroadcast();
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -309,7 +310,7 @@ public class BeaconsListActivity extends BaseActivity {
 
                         // handle the action type Card
                         case MSActionTypeCard:
-                            MSCard card = (MSCard) messageMap.get("card");
+                            /*MSCard card = (MSCard) messageMap.get("card");
 
                             switch (card.getType()) {
                                 case MSCardTypePhoto:
@@ -339,7 +340,95 @@ public class BeaconsListActivity extends BaseActivity {
 
                                         isPopupVisible = true;
                                     }
+                            }*/
+
+                            if (!isPopupVisible) {
+                                isPopupVisible = true;
+                                MSCard card = (MSCard) messageMap.get("card");
+                                MSMedia m;
+                                String src;
+                                AlertDialog.Builder dialogbuilder;
+
+                                String title = card.getTitle();
+
+                                switch (card.getType()) {
+                                    case MSCardTypePhoto:
+                                        ArrayList<String> urls = new ArrayList<>();
+                                        for (int i = 0; i < card.getMediaArray().size(); i++) {
+                                            m = card.getMediaArray().get(i);
+                                            src = m.getMediaUrl().toString();
+                                            urls.add(src);
+                                        }
+                                        String ok_label = (String) messageMap.get("notificationOkLabel");
+                                        String ok_action = (String) messageMap.get("notificationOkAction");
+                                        showPopupDialog(title, null, urls, ok_label, ok_action);
+                                        break;
+
+                                    case MSCardTypeSummary:
+                                        ArrayList<String> cardUrls = new ArrayList<>();
+                                        for (int i = 0; i < card.getMediaArray().size(); i++) {
+                                            m = card.getMediaArray().get(i);
+                                            src = m.getMediaUrl().toString();
+                                            cardUrls.add(src);
+                                        }
+                                        ok_label = (String) messageMap.get("notificationOkLabel");
+                                        ok_action = (String) messageMap.get("notificationOkAction");
+                                        showPopupDialog(card.getTitle(), card.getBody(), cardUrls, ok_label, ok_action);
+                                        break;
+
+                                    case MSCardTypeMedia:
+                                        m = card.getMediaArray().get(0);
+                                        src = m.getMediaUrl().toString();
+
+                                        // handle custom url types
+                                        String ytId = extractYTId(src);
+                                        if (ytId != null) {
+
+                                            ok_label = (String) messageMap.get("notificationOkLabel");
+                                            ok_action = (String) messageMap.get("notificationOkAction");
+                                            showYoutubePopup(ytId, ok_label, ok_action);
+
+                                        } else {
+
+                                            dialogbuilder = new AlertDialog.Builder(context);
+                                            dialogbuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                                @Override
+                                                public void onDismiss(DialogInterface dialog) {
+                                                    isPopupVisible = false;
+                                                }
+                                            });
+                                            final WebView webView = new WebView(context);
+                                            webView.getSettings().setJavaScriptEnabled(true);
+                                            webView.setWebViewClient(new WebViewClient());
+                                            webView.loadUrl(src);
+
+                                            ok_label = (String) messageMap.get("notificationOkLabel");
+                                            final String ok_actionForWebDialog = (String) messageMap.get("notificationOkAction");
+                                            if (ok_label != null && !ok_label.equals("") && ok_label.trim().length() != 0) {
+
+                                                dialogbuilder.setPositiveButton(ok_label, new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                        Uri uri = Uri.parse(ok_actionForWebDialog); // missing 'http://' will cause crashed
+                                                        Intent openUrl = new Intent(Intent.ACTION_VIEW, uri);
+                                                        openUrl.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        startActivity(openUrl);
+                                                    }
+                                                });
+                                            }
+
+                                            dialogbuilder.setView(webView);
+                                            dialogbuilder.setNeutralButton("Close", null);
+                                            dialogbuilder.show();
+
+                                            isPopupVisible = true;
+                                        }
+
+                                        break;
+                                }
                             }
+                            break;
                             break;
 
                         // handle action type webpage

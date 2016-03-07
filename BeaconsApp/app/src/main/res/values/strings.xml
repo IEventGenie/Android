@@ -22,6 +22,8 @@
     <string name="active_events_tab">Active Events</string>
     <string name="past_events_tab">Past Events</string>
     <string name="pre_chkin">Pre Checkin</string>
+    <string name="succ_pre_chkin">Successfully Pre Checked in</string>
+    <string name="error_pre_chkin">Error in Pre Check in</string>
 
     <!-- Menu -->
     <string name="logout">LOGOUT</string>

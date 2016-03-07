@@ -14,14 +14,26 @@ public class GlobalConstants {
 
     //==COMMON==
     public static final String SCANNED_CODE_RESULT = "scanned_code_result";
+
+    public static final String SUCCESS = "success";
     //==========
 
     //URLS====
-    public static final String BASE_URL = "https://dev.icheckingenie.com/";
-    public static final String GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL = "DesktopModules/CheckinService/API/iCheckinEvents/GetAllEventAttendeeDetailByConfirmationCode?confirmationCode=";
+    public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
+    public static final String GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL = "GetAllEventAttendeeDetailByConfirmationCode";
+    public static final String SUBMIT_PRE_CHECKIN_URL = "SubmitPreCheckin";
     //========
 
-    public static final String LAST_NAME_KEY = "lastName";
+
+    //URL Constants===
+    public static final String CONFIRMATION_CODE_PARAM = "confirmationCode";
+    public static final String LAST_NAME_PARAM = "lastName";
+
+    public static final String EVENT_ID_PARAM = "eventId";
+    public static final String ATTENDEE_ID_PARAM = "attendeeId";
+    //================
+
+
 
     public static final String EVENT_DETAILS = "eventDetails";
 
@@ -151,10 +163,8 @@ public class GlobalConstants {
     public static final String CHILDREN = "Children";
     public static final String TEXT = "Text";
 
-}
 
-    //public const string BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
-    //public const string GET_ALL_EVENT_ATTENDEE_DETAIL_BY_CONFIRMATION_CODE = "GetAllEventAttendeeDetailByConfirmationCode";
+}
 
 
 

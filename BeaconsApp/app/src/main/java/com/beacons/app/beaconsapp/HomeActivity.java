@@ -70,7 +70,6 @@ public class HomeActivity extends BaseActivity {
         webView.setWebChromeClient(new MyBrowser());
 
         String url = ""+dataModel.detailModel.Ev_Web_Url;
-
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);

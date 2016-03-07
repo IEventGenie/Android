@@ -1,8 +1,11 @@
 package com.beacons.app.beaconsapp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +15,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
+import com.beacons.app.constants.GlobalConstants;
 import com.beacons.app.utilities.CircleTransform;
+import com.beacons.app.webservices.WebServiceHandler;
 import com.squareup.picasso.Picasso;
 
 
@@ -30,6 +36,7 @@ public class MyEventsActivity extends BaseActivity {
     final int ActiveTabConst = 1;
     final int PastTabConst = 2;
     int CurrentTab = ActiveTabConst;
+    Globals global;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +45,15 @@ public class MyEventsActivity extends BaseActivity {
 
         configActionBar();
 
+        global = (Globals) getApplicationContext();
+
         findViewsApplyActions();
     }
-
 
     public void configActionBar() {
         actionBar = (RelativeLayout)findViewById(R.id.actionbar);
         actionBar.findViewById(R.id.menu_icon).setVisibility(View.INVISIBLE);
+        actionBar.findViewById(R.id.notification_icon).setVisibility(View.INVISIBLE);
 
         ((TextView)actionBar.findViewById(R.id.title)).setText(getResources().getString(R.string.my_events_title));
 
@@ -163,6 +172,7 @@ public class MyEventsActivity extends BaseActivity {
                 holder.title = (TextView) convertView.findViewById(R.id.title);
                 holder.location = (TextView) convertView.findViewById(R.id.location);
                 holder.date = (TextView) convertView.findViewById(R.id.date);
+                holder.prechkBtn = (TextView) convertView.findViewById(R.id.pre_chk_btn);
 
                 convertView.setTag(holder);
 
@@ -192,16 +202,67 @@ public class MyEventsActivity extends BaseActivity {
                 holder.date.setText("" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
             }
 
+            holder.prechkBtn.setTag(position);
+            holder.prechkBtn.setOnClickListener(PreCheckClick);
+
             return convertView;
         }
 
     }
 
+    public View.OnClickListener PreCheckClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            EventDetailMainModel mainModel = global.getEventDetailMainModel();
+            new ConfirmationCodeService(mainModel.detailModel.Ev_Id,mainModel.attendeeDetail.Id).execute("");
+        }
+    };
+
     public class ViewHolder
     {
         ImageView eventImg;
-        TextView title,location,date;
+        TextView title,location,date,prechkBtn;
+    }
 
+    public class ConfirmationCodeService extends AsyncTask<String,Integer,GlobalConstants.ResponseStatus> {
+
+        ProgressDialog pd;
+        String EventId = "",AttendeeId = "";
+
+        public ConfirmationCodeService(String EventId,String AttendeeId) {
+            this.EventId = EventId;
+            this.AttendeeId = AttendeeId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = ProgressDialog.show(MyEventsActivity.this,"","Checking in...");
+        }
+
+        @Override
+        protected GlobalConstants.ResponseStatus doInBackground(String... params) {
+            GlobalConstants.ResponseStatus res = GlobalConstants.ResponseStatus.Fail;
+            try {
+                res = WebServiceHandler.submitPreCheckinEvent(MyEventsActivity.this,EventId,AttendeeId);
+            }catch (Exception e){
+                Log.e("Exception : ", e.getStackTrace().toString());
+            }
+            return res;
+        }
+
+        @Override
+        protected void onPostExecute(GlobalConstants.ResponseStatus status) {
+            super.onPostExecute(status);
+            pd.dismiss();
+            if(status == GlobalConstants.ResponseStatus.OK) {
+                Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.succ_pre_chkin), Toast.LENGTH_LONG).show();
+            }else if(status == GlobalConstants.ResponseStatus.AuthorisationRequired) {
+
+            }else if(status == GlobalConstants.ResponseStatus.Fail){
+                Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.error_pre_chkin), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 }

@@ -59,8 +59,8 @@ public class WebServiceHandler {
         Globals global = (Globals) c.getApplicationContext();
 
         try {
-            String mkUrl = GlobalConstants.BASE_URL+ GlobalConstants.GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL+
-                            confirmationCode+"&"+ GlobalConstants.LAST_NAME_KEY+"="+lastname;
+            String mkUrl = GlobalConstants.BASE_URL+ GlobalConstants.GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL+"?"+
+                            GlobalConstants.CONFIRMATION_CODE_PARAM+"="+confirmationCode+"&"+ GlobalConstants.LAST_NAME_PARAM+"="+lastname;
 
             Log.e("mkurl", "" + mkUrl);
 
@@ -87,6 +87,57 @@ public class WebServiceHandler {
                 if(eventDet != null && eventDet.length() > 0){
                     EventDetailMainModel resultModel = ResponseParser.parseResponseOfEventDetails(contentAsString);
                     global.setEventDetailMainModel(resultModel);
+                    returnStatus = GlobalConstants.ResponseStatus.OK;
+                }else{
+                    returnStatus = GlobalConstants.ResponseStatus.Fail;
+                }
+            }else{
+                returnStatus = GlobalConstants.ResponseStatus.Fail;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnStatus = GlobalConstants.ResponseStatus.Fail;
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+        return returnStatus;
+    }
+
+    public static GlobalConstants.ResponseStatus submitPreCheckinEvent(Context c,String eventId,String attendeeId){
+        URL url;
+        HttpURLConnection urlConnection = null;
+        GlobalConstants.ResponseStatus returnStatus = GlobalConstants.ResponseStatus.Fail;
+        InputStream is;
+        Globals global = (Globals) c.getApplicationContext();
+
+        try {
+            String mkUrl = GlobalConstants.BASE_URL+ GlobalConstants.SUBMIT_PRE_CHECKIN_URL+"?"+
+                            GlobalConstants.EVENT_ID_PARAM+"="+eventId+"&"+ GlobalConstants.ATTENDEE_ID_PARAM+"="+attendeeId;
+            Log.e("mkurl", "" + mkUrl);
+
+            url = new URL(mkUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(10000 /* milliseconds */);
+            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            // Starts the query
+            conn.connect();
+            int response = conn.getResponseCode();
+            Log.d("Prechkin response : ","The response is: " + response);
+            is = conn.getInputStream();
+
+            // Convert the InputStream into a string
+            String contentAsString = readIt(is);
+            Log.e("Service response : ", ":   " + contentAsString);
+
+            if(contentAsString.length() > 0){
+                JSONObject job = new JSONObject(contentAsString);
+                boolean result = job.getBoolean(GlobalConstants.SUCCESS);
+                if(result){
                     returnStatus = GlobalConstants.ResponseStatus.OK;
                 }else{
                     returnStatus = GlobalConstants.ResponseStatus.Fail;
