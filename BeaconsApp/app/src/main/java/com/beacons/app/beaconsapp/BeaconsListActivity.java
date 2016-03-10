@@ -2,6 +2,7 @@ package com.beacons.app.beaconsapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -10,11 +11,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +37,8 @@ import com.mobstac.beaconstac.utils.MSLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by aman on 2/12/16.
@@ -54,6 +59,7 @@ public class BeaconsListActivity extends BaseActivity {
 
     private boolean registered = false;
     private boolean isPopupVisible = false;
+    public AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -387,7 +393,7 @@ public class BeaconsListActivity extends BaseActivity {
                                             ok_label = (String) messageMap.get("notificationOkLabel");
                                             ok_action = (String) messageMap.get("notificationOkAction");
                                             showYoutubePopup(ytId, ok_label, ok_action);
-
+                                            //showPopupDialog(title, null, "", ok_label, ok_action);
                                         } else {
 
                                             dialogbuilder = new AlertDialog.Builder(context);
@@ -429,7 +435,6 @@ public class BeaconsListActivity extends BaseActivity {
                                 }
                             }
                             break;
-                            break;
 
                         // handle action type webpage
                         case MSActionTypeWebpage:
@@ -461,6 +466,69 @@ public class BeaconsListActivity extends BaseActivity {
             }
         }
 
+        /**
+         * Opens a dialogFragment to display offers
+         *
+         * @param title Title of dialog (pass null to hide title)
+         * @param text  Summary of dialog (pass null to hide summary)
+         * @param url   ArrayList containing URLs of images (pass null to hide images)
+         */
+        private void showPopupDialog(String title, String text, ArrayList<String> url, String... ok_data) {
+            String ok_label = "";
+            String ok_action = "";
+
+            if (ok_data.length == 2) {
+                if (ok_data[0] != null && ok_data[1] != null) {
+                    ok_label = ok_data[0];
+                    ok_action = ok_data[1];
+                }
+            }
+
+            FragmentManager fragmentManager = getFragmentManager();
+            //ImageCarouselDialog imageCarouselDialog =
+            //        ImageCarouselDialog.newInstance(title, text, url, ok_label, ok_action);
+            //imageCarouselDialog.setRetainInstance(true);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(BeaconsListActivity.this);
+            builder.setTitle(title);
+            builder.setMessage(text);
+
+            alertDialog = builder.create();
+            alertDialog.show();
+
+            isPopupVisible = true;
+
+            //imageCarouselDialog.show(fragmentManager, "Dialog Fragment");
+        }
+
+        private void showYoutubePopup(String youTubeID, String... ok_data) {
+            String ok_label = "";
+            String ok_action = "";
+
+            if (ok_data.length == 2) {
+                if (ok_data[0] != null && ok_data[1] != null) {
+                    ok_label = ok_data[0];
+                    ok_action = ok_data[1];
+                }
+            }
+
+            //FragmentManager fragmentManager = getSupportFragmentManager();
+            /*YoutubePlayerDialog youtubePlayerDialog =
+                    YoutubePlayerDialog.newInstance(youTubeID, ok_label, ok_action);
+            youtubePlayerDialog.setRetainInstance(true);
+            isPopupVisible = true;
+            youtubePlayerDialog.show(fragmentManager, "Dialog Fragment");*/
+            AlertDialog.Builder builder = new AlertDialog.Builder(BeaconsListActivity.this);
+            builder.setTitle("You tube Player");
+            builder.setMessage("YTID : "+youTubeID);
+
+            alertDialog = builder.create();
+            alertDialog.show();
+
+            isPopupVisible = true;
+
+        }
+
         @Override
         public void enteredRegion(Context context, String region) {
             beaconAdapter.clear();
@@ -487,4 +555,14 @@ public class BeaconsListActivity extends BaseActivity {
             Toast.makeText(getApplicationContext(), "Exited Geofence " + places.get(0).getName(), Toast.LENGTH_SHORT).show();
         }
     };
+
+    public static String extractYTId(String ytUrl) {
+        String vId = null;
+        Pattern pattern = Pattern.compile(".*(?:youtu.be\\/|v\\/|u\\/\\w\\/|embed\\/|watch\\?v=)([^#\\&\\?]*).*");
+        Matcher matcher = pattern.matcher(ytUrl);
+        if (matcher.matches()) {
+            vId = matcher.group(1);
+        }
+        return vId;
+    }
 }

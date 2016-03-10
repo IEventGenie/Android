@@ -189,7 +189,8 @@ public class SlidingMenuSetup {
     public View.OnClickListener MenuItemClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            attachToAct.startActivity(new Intent(attachToAct, MenuDetails.class));
+           //attachToAct.startActivity(new Intent(attachToAct, MenuDetails.class));
+            attachToAct.startActivity(new Intent(attachToAct, BeaconsListActivity.class));
             menu.showContent();
         }
     };
