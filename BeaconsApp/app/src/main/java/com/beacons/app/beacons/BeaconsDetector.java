@@ -1,8 +1,7 @@
-package com.beacons.app.beaconsapp;
+package com.beacons.app.beacons;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -14,7 +13,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -23,9 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.beacons.app.beacons.BeaconAdapter;
-import com.beacons.app.beacons.ImageCarouselDialog;
-import com.beacons.app.beacons.YoutubePlayerDialog;
+import com.beacons.app.beaconsapp.Globals;
+import com.beacons.app.beaconsapp.HomeActivity;
+import com.beacons.app.beaconsapp.R;
 import com.mobstac.beaconstac.core.Beaconstac;
 import com.mobstac.beaconstac.core.BeaconstacReceiver;
 import com.mobstac.beaconstac.core.MSConstants;
@@ -44,71 +43,68 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by aman on 2/12/16.
+ * Created by aman on 3/25/16.
  */
-public class BeaconsListActivity extends FragmentActivity {
+public class BeaconsDetector {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     private ArrayList<MSBeacon> beacons = new ArrayList<MSBeacon>();
-
-    private BeaconAdapter beaconAdapter;
-    private TextView bCount;
-    private TextView testCamped;
     Beaconstac bstacInstance;
 
     private BluetoothAdapter mBluetoothAdapter;
     private static final int REQUEST_ENABLE_BT = 1;
 
     private boolean registered = false;
-    public static boolean isPopupVisible = false;
-    public AlertDialog alertDialog;
+    public boolean isPopupVisible = false;
+    Globals global;
+    public static BeaconsDetector INSTANCE;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.beacons_list);
-
-        beaconSetup();
-
-        if (savedInstanceState == null) {
-            initList();
+    public static BeaconsDetector getInstance() {
+        if(INSTANCE == null){
+            INSTANCE = new BeaconsDetector();
         }
+        return INSTANCE;
+    }
+
+    public void startSetup(Globals global){
+        this.global = global;
+        beaconSetup();
+        registerBroadcast();
     }
 
     public void beaconSetup()
     {
-
         // Use this check to determine whether BLE is supported on the device.
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
+        if (!global.fragActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(global.fragActivity, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
         }
 
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
         // BluetoothAdapter through BluetoothManager.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            BluetoothManager mBluetoothManager = (BluetoothManager) global.fragActivity.getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = mBluetoothManager.getAdapter();
         }
 
         // Checks if Bluetooth is supported on the device.
         if (mBluetoothAdapter == null) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
-            Toast.makeText(this, "Unable to obtain a BluetoothAdapter", Toast.LENGTH_LONG).show();
-        } else {
+            Toast.makeText(global.fragActivity, "Unable to obtain a BluetoothAdapter", Toast.LENGTH_LONG).show();
+        }/* else {
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                global.fragActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             }
-        }
+        }*/
 
         // set region parameters (UUID and unique region identifier)
-        bstacInstance = Beaconstac.getInstance(this);
-        bstacInstance.setRegionParams("F94DBB23-2266-7822-3782-57BEAC0952AC","com.beacons.app.beaconsapp");
+        bstacInstance = Beaconstac.getInstance(global.fragActivity);
+        bstacInstance.setRegionParams("F94DBB23-2266-7822-3782-57BEAC0952AC", "com.beacons.app.beaconsapp");
         bstacInstance.syncRules();
 
         // if location is enabled
-        LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locManager = (LocationManager) global.fragActivity.getSystemService(Context.LOCATION_SERVICE);
         if (locManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             bstacInstance.syncPlaces();
@@ -137,54 +133,22 @@ public class BeaconsListActivity extends FragmentActivity {
             try {
                 bstacInstance.startRangingBeacons();
             } catch (MSException e) {
-                // handle for older devices
-                TextView rangedView = (TextView) findViewById(R.id.RangedView);
-                rangedView.setText(R.string.ble_not_supported);
-                bCount.setVisibility(View.GONE);
-                testCamped.setVisibility(View.GONE);
                 e.printStackTrace();
             }
         }
     }
 
-    private void initList() {
-        ListView beaconList = (ListView) findViewById(R.id.beaconListView);
-        beaconAdapter   = new BeaconAdapter(beacons, this);
-        beaconList.setAdapter(beaconAdapter);
-
-        bCount = (TextView) findViewById(R.id.beaconCount);
-        testCamped = (TextView) findViewById(R.id.CampedView);
-        registerBroadcast();
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        beaconAdapter.clear();
-        beaconAdapter.notifyDataSetChanged();
-        bCount.setText("" + beacons.size());
+    public void activityPaused(){
         unregisterBroadcast();
         isPopupVisible = true;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        initList();
-        bCount.setText("" + beacons.size());
+    public void activityResumed(){
         registerBroadcast();
         isPopupVisible = false;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void activityDestroyed(){
         unregisterBroadcast();
 
         // stop scanning when the app closes
@@ -193,22 +157,6 @@ public class BeaconsListActivity extends FragmentActivity {
                 bstacInstance.stopRangingBeacons();
             } catch (MSException e) {
                 // handle for older devices
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    // Callback intent results
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            finish();
-        }
-        if (bstacInstance != null) {
-            try {
-                bstacInstance.startRangingBeacons();
-            } catch (MSException e) {
                 e.printStackTrace();
             }
         }
@@ -226,13 +174,13 @@ public class BeaconsListActivity extends FragmentActivity {
             intentFilter.addAction(MSConstants.BEACONSTAC_INTENT_EXITED_REGION);
             intentFilter.addAction(MSConstants.BEACONSTAC_INTENT_ENTERED_GEOFENCE);
             intentFilter.addAction(MSConstants.BEACONSTAC_INTENT_EXITED_GEOFENCE);
-            registerReceiver(beaconstacReceiver, intentFilter);
+            global.fragActivity.registerReceiver(beaconstacReceiver, intentFilter);
 
             //register place sync receiver
             IntentFilter iFilter = new IntentFilter();
             iFilter.addAction(MSConstants.BEACONSTAC_INTENT_PLACE_SYNC_SUCCESS);
             iFilter.addAction(MSConstants.BEACONSTAC_INTENT_PLACE_SYNC_FAILURE);
-            registerReceiver(placeSyncReceiver, iFilter);
+            global.fragActivity.registerReceiver(placeSyncReceiver, iFilter);
 
             registered = true;
         }
@@ -241,9 +189,9 @@ public class BeaconsListActivity extends FragmentActivity {
     private void unregisterBroadcast() {
         if (registered) {
             // unregister beaconstac receiver
-            unregisterReceiver(beaconstacReceiver);
+            global.fragActivity.unregisterReceiver(beaconstacReceiver);
             // unregister place sync receiver
-            unregisterReceiver(placeSyncReceiver);
+            global.fragActivity.unregisterReceiver(placeSyncReceiver);
             registered = false;
         }
     }
@@ -271,23 +219,15 @@ public class BeaconsListActivity extends FragmentActivity {
     BeaconstacReceiver beaconstacReceiver = new BeaconstacReceiver() {
         @Override
         public void exitedBeacon(Context context, MSBeacon beacon) {
-            testCamped.setText("Exited: " + beacon.getMajor() + ":" + beacon.getMinor());
-            beaconAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void rangedBeacons(Context context, ArrayList<MSBeacon> rangedBeacons) {
-            beaconAdapter.clear();
-            bCount.setText("" + rangedBeacons.size());
             beacons.addAll(rangedBeacons);
-            beaconAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void campedOnBeacon(Context context, MSBeacon beacon) {
-            testCamped.setText("Camped: " + beacon.getMajor() + ":" + beacon.getMinor());
-            beaconAdapter.addBeacon(beacon);
-            beaconAdapter.notifyDataSetChanged();
         }
 
         @Override
@@ -390,7 +330,7 @@ public class BeaconsListActivity extends FragmentActivity {
                                                         Uri uri = Uri.parse(ok_actionForWebDialog); // missing 'http://' will cause crashed
                                                         Intent openUrl = new Intent(Intent.ACTION_VIEW, uri);
                                                         openUrl.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                        startActivity(openUrl);
+                                                        global.fragActivity.startActivity(openUrl);
                                                     }
                                                 });
                                             }
@@ -440,7 +380,7 @@ public class BeaconsListActivity extends FragmentActivity {
                             break;
                     }
                 }
-                Toast.makeText(getApplicationContext(), "Rule " + ruleName, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(global.fragActivity, "Rule " + ruleName, Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -462,23 +402,13 @@ public class BeaconsListActivity extends FragmentActivity {
                 }
             }
 
-            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            android.support.v4.app.FragmentManager fragmentManager = global.fragActivity.getSupportFragmentManager();
             ImageCarouselDialog imageCarouselDialog =
-            ImageCarouselDialog.newInstance(title, text, url, ok_label, ok_action);
+                    ImageCarouselDialog.newInstance(title, text, url, ok_label, ok_action);
             imageCarouselDialog.setRetainInstance(true);
             imageCarouselDialog.show(fragmentManager, "Dialog Fragment");
-            //imageCarouselDialog.
-
-            /*AlertDialog.Builder builder = new AlertDialog.Builder(BeaconsListActivity.this);
-            builder.setTitle(title);
-            builder.setMessage(text);
-
-            alertDialog = builder.create();
-            alertDialog.show();*/
 
             isPopupVisible = true;
-
-
         }
 
         private void showYoutubePopup(String youTubeID, String... ok_data) {
@@ -492,52 +422,39 @@ public class BeaconsListActivity extends FragmentActivity {
                 }
             }
 
-            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            android.support.v4.app.FragmentManager fragmentManager = global.fragActivity.getSupportFragmentManager();
             YoutubePlayerDialog youtubePlayerDialog =
                     YoutubePlayerDialog.newInstance(youTubeID, ok_label, ok_action);
             youtubePlayerDialog.setRetainInstance(true);
             isPopupVisible = true;
             youtubePlayerDialog.show(fragmentManager, "Dialog Fragment");
 
-            /*AlertDialog.Builder builder = new AlertDialog.Builder(BeaconsListActivity.this);
-            builder.setTitle("You tube Player");
-            builder.setMessage("YTID : "+youTubeID);
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    isPopupVisible = false;
-                }
-            });
-
-            alertDialog = builder.create();
-            alertDialog.show();*/
-
         }
 
         @Override
         public void enteredRegion(Context context, String region) {
-            beaconAdapter.clear();
-            beaconAdapter.notifyDataSetChanged();
-            bCount.setText("" + beacons.size());
-            Toast.makeText(getApplicationContext(), "Entered region", Toast.LENGTH_SHORT).show();
+            //beaconAdapter.clear();
+            //beaconAdapter.notifyDataSetChanged();
+            //bCount.setText("" + beacons.size());
+            Toast.makeText(global.fragActivity, "Entered region", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void exitedRegion(Context context, String region) {
-            beaconAdapter.clear();
-            beaconAdapter.notifyDataSetChanged();
-            bCount.setText("" + beacons.size());
-            Toast.makeText(getApplicationContext(), "Exited region", Toast.LENGTH_SHORT).show();
+            //beaconAdapter.clear();
+            //beaconAdapter.notifyDataSetChanged();
+            //bCount.setText("" + beacons.size());
+            Toast.makeText(global.fragActivity, "Exited region", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void enteredGeofence(Context context, ArrayList<MSPlace> places) {
-            Toast.makeText(getApplicationContext(), "Entered Geofence " + places.get(0).getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(global.fragActivity, "Entered Geofence " + places.get(0).getName(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void exitedGeofence(Context context, ArrayList<MSPlace> places) {
-            Toast.makeText(getApplicationContext(), "Exited Geofence " + places.get(0).getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(global.fragActivity, "Exited Geofence " + places.get(0).getName(), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -550,4 +467,5 @@ public class BeaconsListActivity extends FragmentActivity {
         }
         return vId;
     }
+
 }

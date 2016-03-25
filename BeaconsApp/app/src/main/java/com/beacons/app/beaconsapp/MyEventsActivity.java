@@ -1,7 +1,9 @@
 package com.beacons.app.beaconsapp;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,6 +39,7 @@ public class MyEventsActivity extends BaseActivity {
     final int PastTabConst = 2;
     int CurrentTab = ActiveTabConst;
     Globals global;
+    AlertDialog preChkDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,10 +216,34 @@ public class MyEventsActivity extends BaseActivity {
     public View.OnClickListener PreCheckClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            EventDetailMainModel mainModel = global.getEventDetailMainModel();
-            new ConfirmationCodeService(mainModel.detailModel.Ev_Id,mainModel.attendeeDetail.Id).execute("");
+            showPreCheckinDialog();
         }
     };
+
+    public void showPreCheckinDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Alert");
+        builder.setMessage("Do you want to Pre Checkin for the event?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                preChkDialog.dismiss();
+                EventDetailMainModel mainModel = global.getEventDetailMainModel();
+                new ConfirmationCodeService(mainModel.detailModel.Ev_Id, mainModel.attendeeDetail.Id).execute("");
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                preChkDialog.dismiss();
+            }
+        });
+
+        preChkDialog = builder.create();
+        preChkDialog.show();
+    }
 
     public class ViewHolder
     {
