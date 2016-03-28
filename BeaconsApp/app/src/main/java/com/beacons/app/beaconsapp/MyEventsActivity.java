@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,7 @@ import com.beacons.app.webservices.WebServiceHandler;
 import com.squareup.picasso.Picasso;
 
 
-public class MyEventsActivity extends BaseActivity {
+public class MyEventsActivity extends FragmentActivity {
 
 
     RelativeLayout actionBar;
@@ -49,8 +50,27 @@ public class MyEventsActivity extends BaseActivity {
         configActionBar();
 
         global = (Globals) getApplicationContext();
+        global.setFragActivity(this);
 
         findViewsApplyActions();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        global.fragActivityResumed(this.getClass(),MyEventsActivity.this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        global.fragActivityPaused();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        global.fragActivityDestroyed();
     }
 
     public void configActionBar() {

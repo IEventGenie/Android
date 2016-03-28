@@ -2,6 +2,7 @@ package com.beacons.app.beaconsapp;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -19,7 +20,7 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.squareup.picasso.Picasso;
 
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends FragmentActivity {
 
 
     SlidingMenu menu;
@@ -55,6 +56,8 @@ public class HomeActivity extends BaseActivity {
         menu = new SlidingMenuSetup(HomeActivity.this).setSlidingMenu();
 
         global = (Globals) getApplicationContext();
+        global.setFragActivity(this);
+
         dataModel = global.getEventDetailMainModel();
 
         progress = (ProgressBar) findViewById(R.id.progressBar);
@@ -62,6 +65,24 @@ public class HomeActivity extends BaseActivity {
 
         setWebView();
         setEventData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        global.fragActivityResumed(this.getClass(),HomeActivity.this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        global.fragActivityPaused();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        global.fragActivityDestroyed();
     }
 
     public void setWebView(){

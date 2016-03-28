@@ -2,6 +2,7 @@ package com.beacons.app.beacons;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -143,8 +145,21 @@ public class BeaconsDetector {
         isPopupVisible = true;
     }
 
-    public void activityResumed(){
-        registerBroadcast();
+    public void activityResumed(Class classObj,FragmentActivity act){
+        if(classObj.isAssignableFrom(global.getFragActivity().getClass()))
+        {
+            registerBroadcast();
+        }else{
+            try {
+                global.fragActivity = act;
+                beaconSetup();
+                registerBroadcast();
+                isPopupVisible = false;
+            }
+            catch (Exception e){
+                System.out.println(e.getStackTrace());
+            }
+        }
         isPopupVisible = false;
     }
 

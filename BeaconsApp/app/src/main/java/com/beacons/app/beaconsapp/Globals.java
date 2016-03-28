@@ -31,8 +31,8 @@ public class Globals extends Application {
         this.fragActivity = fragActivity;
         BeaconsDetector.getInstance().startSetup(this);
     }
-    public void fragActivityResumed(){
-        BeaconsDetector.getInstance().activityResumed();
+    public void fragActivityResumed(Class classObj,FragmentActivity act){
+        BeaconsDetector.getInstance().activityResumed(classObj,act);
     }
     public void fragActivityPaused(){
         BeaconsDetector.getInstance().activityPaused();
