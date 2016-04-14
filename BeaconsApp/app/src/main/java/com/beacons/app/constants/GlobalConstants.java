@@ -164,6 +164,14 @@ public class GlobalConstants {
     public static final String TEXT = "Text";
 
 
+    //Beacons Notification Types
+    public static final String BEACON_TYPE_POPUP  = "MSActionTypePopup";
+    public static final String BEACON_TYPE_PHOTO  = "MSCardTypePhoto";
+    public static final String BEACON_TYPE_SUMMARY  = "MSCardTypeSummary";
+    public static final String BEACON_TYPE_MEDIA  = "MSCardTypeMedia";
+    public static final String BEACON_TYPE_WEBPAGE  = "MSActionTypeWebpage";
+
+
 }
 
 

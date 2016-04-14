@@ -17,6 +17,27 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!--
+     Creates a custom permission so only this app can receive its messages.
+
+     NOTE: the permission *must* be called PACKAGE.permission.C2D_MESSAGE,
+           where PACKAGE is the application's package name.
+    -->
+    <permission
+        android:name="com.beacons.app.beaconsapp.permission.C2D_MESSAGE"
+        android:protectionLevel="signature"/>
+    <uses-permission
+        android:name="com.beacons.app.beaconsapp.permission.C2D_MESSAGE"/>
+
+    <!-- This app has permission to register and receive data message. -->
+    <uses-permission
+        android:name="com.google.android.c2dm.permission.RECEIVE"/>
+
 
     <application
         android:allowBackup="true"
@@ -25,6 +46,47 @@
         android:supportsRtl="true"
         android:name=".Globals"
         android:theme="@style/AppTheme.NoActionBar">
+
+        <meta-data android:name="PW_APPID" android:value="70C21-84EA1" />
+        <meta-data android:name="PW_PROJECT_ID" android:value="A922367254091" />
+
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+
+        <activity android:name="com.pushwoosh.richpages.RichPageActivity" />
+        <activity android:name="com.pushwoosh.MessageActivity" />
+        <activity android:name="com.pushwoosh.PushHandlerActivity" />
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.beacons.app.beaconsapp" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.pushwoosh.GCMListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.pushwoosh.GCMInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.pushwoosh.GCMRegistrationService"
+            android:exported="false">
+        </service>
+
         <activity
             android:name=".SplashScreen"
             android:label="@string/app_name"
@@ -47,6 +109,8 @@
         <activity android:name=".MenuDetails" android:screenOrientation="portrait"></activity>
 
         <activity android:name="com.beacons.app.qrcodescanner.ScannerActivity" android:screenOrientation="portrait"></activity>
+
+        <activity android:name=".NotificationListAvticity" android:screenOrientation="portrait"></activity>
 
         <receiver android:name="com.beacons.app.beacons.BeaconstacBroadcastReceiver" android:exported="false">
             <intent-filter>

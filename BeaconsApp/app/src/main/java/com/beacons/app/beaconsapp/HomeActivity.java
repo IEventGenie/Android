@@ -1,5 +1,6 @@
 package com.beacons.app.beaconsapp;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -43,6 +44,13 @@ public class HomeActivity extends FragmentActivity {
             public void onClick(View v) {
                 if (menu != null)
                     menu.showMenu(true);
+            }
+        });
+
+        actionBar.findViewById(R.id.notification_icon).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this,NotificationListAvticity.class));
             }
         });
 

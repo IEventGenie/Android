@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/my_event_list_div_color"
+    >
+
+    <include
+        android:id="@+id/actionbar"
+        layout="@layout/action_bar_white"
+        />
+    <ListView
+        android:id="@+id/notification_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/my_event_list_div_color"
+        android:dividerHeight="0.5dp"
+        />
+
+</LinearLayout>

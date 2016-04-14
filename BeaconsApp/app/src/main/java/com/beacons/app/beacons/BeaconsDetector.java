@@ -27,6 +27,9 @@ import android.widget.Toast;
 import com.beacons.app.beaconsapp.Globals;
 import com.beacons.app.beaconsapp.HomeActivity;
 import com.beacons.app.beaconsapp.R;
+import com.beacons.app.constants.GlobalConstants;
+import com.beacons.app.notificationDb.BeaconNotification;
+import com.beacons.app.notificationDb.DatabaseHandler;
 import com.mobstac.beaconstac.core.Beaconstac;
 import com.mobstac.beaconstac.core.BeaconstacReceiver;
 import com.mobstac.beaconstac.core.MSConstants;
@@ -59,6 +62,7 @@ public class BeaconsDetector {
 
     private boolean registered = false;
     public boolean isPopupVisible = false;
+    public DatabaseHandler databaseHandler;
     Globals global;
     public static BeaconsDetector INSTANCE;
 
@@ -77,6 +81,7 @@ public class BeaconsDetector {
 
     public void beaconSetup()
     {
+        databaseHandler = new DatabaseHandler(global.fragActivity);
         // Use this check to determine whether BLE is supported on the device.
         if (!global.fragActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(global.fragActivity, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
@@ -243,6 +248,7 @@ public class BeaconsDetector {
 
         @Override
         public void campedOnBeacon(Context context, MSBeacon beacon) {
+
         }
 
         @Override
@@ -260,7 +266,8 @@ public class BeaconsDetector {
                         case MSActionTypePopup:
                             dialogBuilder = new AlertDialog.Builder(context);
                             messageMap = action.getMessage();
-                            dialogBuilder.setTitle(action.getName()).setMessage((String) messageMap.get("text"));
+                            String titlePop = ""+action.getName();
+                            dialogBuilder.setTitle(titlePop).setMessage((String) messageMap.get("text"));
                             AlertDialog dialog = dialogBuilder.create();
                             dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                 @Override
@@ -270,6 +277,7 @@ public class BeaconsDetector {
                             });
                             dialog.show();
                             isPopupVisible = true;
+                            insertEntryInDb(titlePop, GlobalConstants.BEACON_TYPE_POPUP);
                             break;
 
                         // handle the action type Card
@@ -294,6 +302,7 @@ public class BeaconsDetector {
                                         String ok_label = (String) messageMap.get("notificationOkLabel");
                                         String ok_action = (String) messageMap.get("notificationOkAction");
                                         showPopupDialog(title, null, urls, ok_label, ok_action);
+                                        insertEntryInDb(title, GlobalConstants.BEACON_TYPE_PHOTO);
                                         break;
 
                                     case MSCardTypeSummary:
@@ -306,6 +315,7 @@ public class BeaconsDetector {
                                         ok_label = (String) messageMap.get("notificationOkLabel");
                                         ok_action = (String) messageMap.get("notificationOkAction");
                                         showPopupDialog(card.getTitle(), card.getBody(), cardUrls, ok_label, ok_action);
+                                        insertEntryInDb(title, GlobalConstants.BEACON_TYPE_SUMMARY);
                                         break;
 
                                     case MSCardTypeMedia:
@@ -320,6 +330,7 @@ public class BeaconsDetector {
                                             ok_action = (String) messageMap.get("notificationOkAction");
                                             showYoutubePopup(ytId, ok_label, ok_action);
                                             //showPopupDialog(title, null, "", ok_label, ok_action);
+                                            insertEntryInDb(title, GlobalConstants.BEACON_TYPE_MEDIA);
                                         } else {
 
                                             dialogbuilder = new AlertDialog.Builder(context);
@@ -355,6 +366,8 @@ public class BeaconsDetector {
                                             dialogbuilder.show();
 
                                             isPopupVisible = true;
+
+                                            insertEntryInDb(title, GlobalConstants.BEACON_TYPE_MEDIA);
                                         }
 
                                         break;
@@ -391,6 +404,8 @@ public class BeaconsDetector {
 
                                 isPopupVisible = true;
 
+                                String title = ""+action.getName();
+                                insertEntryInDb(title, GlobalConstants.BEACON_TYPE_WEBPAGE);
                             }
                             break;
                     }
@@ -444,6 +459,12 @@ public class BeaconsDetector {
             isPopupVisible = true;
             youtubePlayerDialog.show(fragmentManager, "Dialog Fragment");
 
+        }
+
+        public void insertEntryInDb(String title,String notiType)
+        {
+            Log.d("Insert: ", "Inserting ..");
+            databaseHandler.addNotification(new BeaconNotification(title,notiType));
         }
 
         @Override

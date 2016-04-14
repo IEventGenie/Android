@@ -2,9 +2,11 @@ package com.beacons.app.beaconsapp;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -24,6 +26,9 @@ import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.constants.GlobalConstants;
 import com.beacons.app.utilities.CircleTransform;
 import com.beacons.app.webservices.WebServiceHandler;
+import com.pushwoosh.BasePushMessageReceiver;
+import com.pushwoosh.BaseRegistrationReceiver;
+import com.pushwoosh.PushManager;
 import com.squareup.picasso.Picasso;
 
 
@@ -53,18 +58,53 @@ public class MyEventsActivity extends FragmentActivity {
         global.setFragActivity(this);
 
         findViewsApplyActions();
+
+
+        //Register receivers for push notifications
+        registerReceivers();
+
+        //Create and start push manager
+        PushManager pushManager = PushManager.getInstance(this);
+
+        //Start push manager, this will count app open for Pushwoosh stats as well
+        try {
+            pushManager.onStartup(this);
+        }
+        catch(Exception e)
+        {
+            //push notifications are not available or AndroidManifest.xml is not configured properly
+        }
+
+        //Register for push!
+        pushManager.registerForPushNotifications();
+
+        checkMessage(getIntent());
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        global.fragActivityResumed(this.getClass(),MyEventsActivity.this);
+        global.fragActivityResumed(this.getClass(), MyEventsActivity.this);
+        //Re-register receivers on resume
+        registerReceivers();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         global.fragActivityPaused();
+        //Unregister receivers on pause
+        unregisterReceivers();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        checkMessage(intent);
     }
 
     @Override
@@ -150,6 +190,125 @@ public class MyEventsActivity extends FragmentActivity {
 
     }
 
+
+    //Registration receiver
+    BroadcastReceiver mBroadcastReceiver = new BaseRegistrationReceiver()
+    {
+        @Override
+        public void onRegisterActionReceive(Context context, Intent intent)
+        {
+            checkMessage(intent);
+        }
+    };
+
+    //Push message receiver
+    private BroadcastReceiver mReceiver = new BasePushMessageReceiver()
+    {
+        @Override
+        protected void onMessageReceive(Intent intent)
+        {
+            //JSON_DATA_KEY contains JSON payload of push notification.
+            showMessage("push message is " + intent.getExtras().getString(JSON_DATA_KEY));
+        }
+    };
+
+    //Registration of the receivers
+    public void registerReceivers()
+    {
+        IntentFilter intentFilter = new IntentFilter(getPackageName() + ".action.PUSH_MESSAGE_RECEIVE");
+
+        registerReceiver(mReceiver, intentFilter, getPackageName() + ".permission.C2D_MESSAGE", null);
+
+        registerReceiver(mBroadcastReceiver, new IntentFilter(getPackageName() + "." + PushManager.REGISTER_BROAD_CAST_ACTION));
+    }
+
+    public void unregisterReceivers()
+    {
+        //Unregister receivers on pause
+        try
+        {
+            unregisterReceiver(mReceiver);
+        }
+        catch (Exception e)
+        {
+            // pass.
+        }
+
+        try
+        {
+            unregisterReceiver(mBroadcastReceiver);
+        }
+        catch (Exception e)
+        {
+            //pass through
+        }
+    }
+
+    private void checkMessage(Intent intent)
+    {
+        if (null != intent)
+        {
+            if (intent.hasExtra(PushManager.PUSH_RECEIVE_EVENT))
+            {
+                showMessage("push message is " + intent.getExtras().getString(PushManager.PUSH_RECEIVE_EVENT));
+            }
+            else if (intent.hasExtra(PushManager.REGISTER_EVENT))
+            {
+                showMessage("register");
+            }
+            else if (intent.hasExtra(PushManager.UNREGISTER_EVENT))
+            {
+                showMessage("unregister");
+            }
+            else if (intent.hasExtra(PushManager.REGISTER_ERROR_EVENT))
+            {
+                showMessage("register error");
+            }
+            else if (intent.hasExtra(PushManager.UNREGISTER_ERROR_EVENT))
+            {
+                showMessage("unregister error");
+            }
+
+            resetIntentValues();
+        }
+    }
+
+    /**
+     * Will check main Activity intent and if it contains any PushWoosh data, will clear it
+     */
+    private void resetIntentValues()
+    {
+        Intent mainAppIntent = getIntent();
+
+        if (mainAppIntent.hasExtra(PushManager.PUSH_RECEIVE_EVENT))
+        {
+            mainAppIntent.removeExtra(PushManager.PUSH_RECEIVE_EVENT);
+        }
+        else if (mainAppIntent.hasExtra(PushManager.REGISTER_EVENT))
+        {
+            mainAppIntent.removeExtra(PushManager.REGISTER_EVENT);
+        }
+        else if (mainAppIntent.hasExtra(PushManager.UNREGISTER_EVENT))
+        {
+            mainAppIntent.removeExtra(PushManager.UNREGISTER_EVENT);
+        }
+        else if (mainAppIntent.hasExtra(PushManager.REGISTER_ERROR_EVENT))
+        {
+            mainAppIntent.removeExtra(PushManager.REGISTER_ERROR_EVENT);
+        }
+        else if (mainAppIntent.hasExtra(PushManager.UNREGISTER_ERROR_EVENT))
+        {
+            mainAppIntent.removeExtra(PushManager.UNREGISTER_ERROR_EVENT);
+        }
+
+        setIntent(mainAppIntent);
+    }
+
+    private void showMessage(String message)
+    {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
     public class EventsAdapter extends BaseAdapter
     {
         LayoutInflater inflater;
@@ -211,11 +370,17 @@ public class MyEventsActivity extends FragmentActivity {
 
             holder.title.setText(""+dataModel.detailModel.Ev_Nm);
             holder.location.setText("" + dataModel.detailModel.Ev_Addr_1_Txt + "," + dataModel.detailModel.Ev_City_Txt);
-            Picasso.with(MyEventsActivity.this)
-                    .load(""+dataModel.detailModel.Ev_Img_Url)
-                    .transform(new CircleTransform())
-                    .placeholder(R.drawable.icon)
-                    .into(holder.eventImg);
+            try {
+                Picasso.with(MyEventsActivity.this)
+                        .load(""+dataModel.detailModel.Ev_Img_Url)
+                        .transform(new CircleTransform())
+                        .placeholder(R.drawable.icon)
+                        .into(holder.eventImg);
+            }
+            catch (Exception e){
+                Log.e("picasso",""+e.getStackTrace());
+            }
+
             try {
                 String date = "" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm;
                 date = date.split("T")[0];
