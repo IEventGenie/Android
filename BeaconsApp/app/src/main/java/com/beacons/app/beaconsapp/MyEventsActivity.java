@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
+import com.beacons.app.WebserviceDataModels.ResponseModel;
 import com.beacons.app.constants.GlobalConstants;
 import com.beacons.app.utilities.CircleTransform;
 import com.beacons.app.webservices.WebServiceHandler;
@@ -77,9 +78,7 @@ public class MyEventsActivity extends FragmentActivity {
 
         //Register for push!
         pushManager.registerForPushNotifications();
-
         checkMessage(getIntent());
-
     }
 
     @Override
@@ -436,7 +435,7 @@ public class MyEventsActivity extends FragmentActivity {
         TextView title,location,date,prechkBtn;
     }
 
-    public class ConfirmationCodeService extends AsyncTask<String,Integer,GlobalConstants.ResponseStatus> {
+    public class ConfirmationCodeService extends AsyncTask<String,Integer,ResponseModel> {
 
         ProgressDialog pd;
         String EventId = "",AttendeeId = "";
@@ -453,26 +452,27 @@ public class MyEventsActivity extends FragmentActivity {
         }
 
         @Override
-        protected GlobalConstants.ResponseStatus doInBackground(String... params) {
-            GlobalConstants.ResponseStatus res = GlobalConstants.ResponseStatus.Fail;
+        protected ResponseModel doInBackground(String... params) {
+            ResponseModel returnModel = new ResponseModel();
+            returnModel.responseStatus = GlobalConstants.ResponseStatus.Fail;
             try {
-                res = WebServiceHandler.submitPreCheckinEvent(MyEventsActivity.this,EventId,AttendeeId);
+                returnModel = WebServiceHandler.submitPreCheckinEvent(MyEventsActivity.this,EventId,AttendeeId);
             }catch (Exception e){
                 Log.e("Exception : ", e.getStackTrace().toString());
             }
-            return res;
+            return returnModel;
         }
 
         @Override
-        protected void onPostExecute(GlobalConstants.ResponseStatus status) {
-            super.onPostExecute(status);
+        protected void onPostExecute(ResponseModel res) {
+            super.onPostExecute(res);
             pd.dismiss();
-            if(status == GlobalConstants.ResponseStatus.OK) {
+            if(res.responseStatus == GlobalConstants.ResponseStatus.OK) {
                 Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.succ_pre_chkin), Toast.LENGTH_LONG).show();
-            }else if(status == GlobalConstants.ResponseStatus.AuthorisationRequired) {
+            }else if(res.responseStatus == GlobalConstants.ResponseStatus.AuthorisationRequired) {
 
-            }else if(status == GlobalConstants.ResponseStatus.Fail){
-                Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.error_pre_chkin), Toast.LENGTH_LONG).show();
+            }else if(res.responseStatus == GlobalConstants.ResponseStatus.Fail){
+                Toast.makeText(MyEventsActivity.this, ""+res.message, Toast.LENGTH_LONG).show();
             }
         }
     }

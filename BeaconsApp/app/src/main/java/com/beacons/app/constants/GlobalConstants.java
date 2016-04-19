@@ -16,12 +16,15 @@ public class GlobalConstants {
     public static final String SCANNED_CODE_RESULT = "scanned_code_result";
 
     public static final String SUCCESS = "success";
+    public static final String MESSAGE = "message";
     //==========
 
     //URLS====
     public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
     public static final String GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL = "GetAllEventAttendeeDetailByConfirmationCode";
     public static final String SUBMIT_PRE_CHECKIN_URL = "SubmitPreCheckin";
+    public static final String CHECKIN_WITH_CONFIRMATION_CODE_URL = "CheckinWithConfirmation";
+    public static final String CHECKOUT_WITH_CONFIRMATION_CODE_URL = "CheckoutWithConfirmation";
     //========
 
 
@@ -31,6 +34,8 @@ public class GlobalConstants {
 
     public static final String EVENT_ID_PARAM = "eventId";
     public static final String ATTENDEE_ID_PARAM = "attendeeId";
+
+    public static final String CONFIRMATION_NUMBER_PARAM = "confirmationNumber";
     //================
 
 

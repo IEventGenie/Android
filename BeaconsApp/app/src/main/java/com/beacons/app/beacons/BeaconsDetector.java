@@ -237,6 +237,7 @@ public class BeaconsDetector {
 
 
     BeaconstacReceiver beaconstacReceiver = new BeaconstacReceiver() {
+
         @Override
         public void exitedBeacon(Context context, MSBeacon beacon) {
         }
@@ -248,7 +249,7 @@ public class BeaconsDetector {
 
         @Override
         public void campedOnBeacon(Context context, MSBeacon beacon) {
-
+            System.out.println(""+beacon.getId());
         }
 
         @Override

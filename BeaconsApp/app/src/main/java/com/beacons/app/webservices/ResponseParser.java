@@ -99,7 +99,7 @@ public class ResponseParser {
             }
             if(evDetObj.has(GlobalConstants.EV_CHK_IN_STRT_DTTM))
             {
-                evDetModel.Ev_Chk_In_Strt_Dttm = evDetObj.getString(GlobalConstants.EV_CHK_IN_END_DTTM);
+                evDetModel.Ev_Chk_In_Strt_Dttm = evDetObj.getString(GlobalConstants.EV_CHK_IN_STRT_DTTM);
             }
             if(evDetObj.has(GlobalConstants.EV_CITY_TXT))
             {

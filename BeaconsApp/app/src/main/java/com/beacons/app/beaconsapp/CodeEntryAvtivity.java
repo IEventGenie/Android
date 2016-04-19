@@ -16,7 +16,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.constants.GlobalConstants;
+import com.beacons.app.notificationDb.DatabaseHandler;
+import com.beacons.app.notificationDb.EventDetailDBModel;
 import com.beacons.app.qrcodescanner.ScannerActivity;
 import com.beacons.app.webservices.WebServiceHandler;
 import com.mobstac.beaconstac.utils.MSException;
@@ -28,6 +31,7 @@ public class CodeEntryAvtivity extends BaseActivity {
     public final int requestCode = 100;
     private BluetoothAdapter mBluetoothAdapter;
     private static final int REQUEST_ENABLE_BT = 1;
+    Globals global;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,8 @@ public class CodeEntryAvtivity extends BaseActivity {
 
     public void findViewsApplyAction()
     {
+        global = (Globals) getApplicationContext();
+
         codeEd = (EditText) findViewById(R.id.code_ed);
         lastEd = (EditText) findViewById(R.id.last_name_ed);
 
@@ -83,7 +89,6 @@ public class CodeEntryAvtivity extends BaseActivity {
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -149,6 +154,27 @@ public class CodeEntryAvtivity extends BaseActivity {
             super.onPostExecute(status);
             pd.dismiss();
             if(status == GlobalConstants.ResponseStatus.OK) {
+                try {
+                    EventDetailMainModel dataModel = global.getEventDetailMainModel();
+                    EventDetailDBModel dbModel = new EventDetailDBModel();
+                    dbModel.setConfirmCode(confirmationCode);
+                    dbModel.setLastName(lastName);
+                    dbModel.setEvId(dataModel.detailModel.Ev_Id);
+                    dbModel.setEvAddrTxt(dataModel.detailModel.Ev_Addr_1_Txt);
+                    dbModel.setEvCityTxt(dataModel.detailModel.Ev_City_Txt);
+                    dbModel.setEvImgUrl(dataModel.detailModel.Ev_Img_Url);
+                    dbModel.setEvLocTxt(dataModel.detailModel.Ev_Loc_Txt);
+                    dbModel.setEvName(dataModel.detailModel.Ev_Nm);
+                    dbModel.setEnablePrechkIn("" + dataModel.detailModel.Enabl_PreCheckin);
+                    dbModel.setAttendeeId(dataModel.attendeeDetail.Id);
+                    dbModel.setStartDate(dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+
+                    DatabaseHandler dbHandler = new DatabaseHandler(CodeEntryAvtivity.this);
+                    dbHandler.addEventDetail(dbModel);
+                }catch (Exception e){
+                    Log.e("Inserting ev in db",""+e.getStackTrace());
+                }
+
                 startActivity(new Intent(CodeEntryAvtivity.this, MyEventsActivity.class));
                 //CodeEntryAvtivity.this.finish();
             }else if(status == GlobalConstants.ResponseStatus.AuthorisationRequired) {
