@@ -17,6 +17,7 @@
     <string name="confirm_code_req_error">Code required!</string>
     <string name="lastname_code_wrong">Lastname or confirmation code is wrong!</string>
 
+
     <!-- My Events -->
     <string name="my_events_title">My Events</string>
     <string name="active_events_tab">Active Events</string>
@@ -24,7 +25,7 @@
     <string name="pre_chkin">Pre Checkin</string>
     <string name="succ_pre_chkin">Successfully Pre Checked in</string>
     <string name="error_pre_chkin">Error in Pre Check in</string>
-
+    <string name="error_getting_details">Error in getting details!</string>
     <!-- Menu -->
     <string name="logout">LOGOUT</string>
 

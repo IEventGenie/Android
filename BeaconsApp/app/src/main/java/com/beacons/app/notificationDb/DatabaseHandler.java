@@ -93,24 +93,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Adding new Notification
     public void addEventDetail(EventDetailDBModel evdet) {
-        SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(KEY_CONFIRMATION_CODE, evdet.getConfirmCode());
-        values.put(KEY_LAST_NAME, evdet.getLastName());
-        values.put(KEY_EV_ID, evdet.getEvId());
-        values.put(KEY_EV_ADDRESS_TXT, evdet.getEvAddrTxt());
-        values.put(KEY_EV_CITY_TXT, evdet.getEvCityTxt());
-        values.put(KEY_EV_IMG_URL, evdet.getEvImgUrl());
-        values.put(KEY_EV_LOC_TXT, evdet.getEvLocTxt());
-        values.put(KEY_EV_NAME, evdet.getEvName());
-        values.put(KEY_ENABLE_PRECHECK_IN, evdet.getEnablePrechkIn());
-        values.put(KEY_ATTENDEE_ID, evdet.getAttendeeId());
-        values.put(KEY_START_DATE, evdet.getStartDate());
+        boolean canInsert = true;
 
-        // Inserting Row
-        long id = db.insert(TABLE_CONFIRM_CODE_EVENTS, null, values);
-        db.close(); // Closing database connection
+        ArrayList<EventDetailDBModel> evList = getAllEvents();
+        for (EventDetailDBModel model : evList) {
+            if(model.getEvId().equals(evdet.getEvId())){
+                canInsert = false;
+            }
+        }
+
+        if(canInsert) {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(KEY_CONFIRMATION_CODE, evdet.getConfirmCode());
+            values.put(KEY_LAST_NAME, evdet.getLastName());
+            values.put(KEY_EV_ID, evdet.getEvId());
+            values.put(KEY_EV_ADDRESS_TXT, evdet.getEvAddrTxt());
+            values.put(KEY_EV_CITY_TXT, evdet.getEvCityTxt());
+            values.put(KEY_EV_IMG_URL, evdet.getEvImgUrl());
+            values.put(KEY_EV_LOC_TXT, evdet.getEvLocTxt());
+            values.put(KEY_EV_NAME, evdet.getEvName());
+            values.put(KEY_ENABLE_PRECHECK_IN, evdet.getEnablePrechkIn());
+            values.put(KEY_ATTENDEE_ID, evdet.getAttendeeId());
+            values.put(KEY_START_DATE, evdet.getStartDate());
+
+            // Inserting Row
+            long id = db.insert(TABLE_CONFIRM_CODE_EVENTS, null, values);
+            db.close(); // Closing database connection
+        }
     }
 
     // Getting All Contacts
@@ -163,7 +175,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
  
     // Getting single contact
-    BeaconNotification getNotification(String title) {
+    public BeaconNotification getNotification(String title) {
         SQLiteDatabase db = this.getReadableDatabase();
  
         Cursor cursor = db.query(TABLE_NOTIFICATION, new String[] { KEY_ID, KEY_TITLE, KEY_TYPE, KEY_DATE }, KEY_TITLE + "=?",

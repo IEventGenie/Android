@@ -25,12 +25,16 @@ import android.widget.Toast;
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.WebserviceDataModels.ResponseModel;
 import com.beacons.app.constants.GlobalConstants;
+import com.beacons.app.notificationDb.DatabaseHandler;
+import com.beacons.app.notificationDb.EventDetailDBModel;
 import com.beacons.app.utilities.CircleTransform;
 import com.beacons.app.webservices.WebServiceHandler;
 import com.pushwoosh.BasePushMessageReceiver;
 import com.pushwoosh.BaseRegistrationReceiver;
 import com.pushwoosh.PushManager;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 
 public class MyEventsActivity extends FragmentActivity {
@@ -47,6 +51,7 @@ public class MyEventsActivity extends FragmentActivity {
     int CurrentTab = ActiveTabConst;
     Globals global;
     AlertDialog preChkDialog;
+    ArrayList<EventDetailDBModel> evList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +84,8 @@ public class MyEventsActivity extends FragmentActivity {
         //Register for push!
         pushManager.registerForPushNotifications();
         checkMessage(getIntent());
+
+        setEventsList();
     }
 
     @Override
@@ -132,13 +139,11 @@ public class MyEventsActivity extends FragmentActivity {
         activeEventsList = (ListView) findViewById(R.id.active_event_list);
         pastEventsList = (ListView) findViewById(R.id.past_event_list);
 
-        adapter = new EventsAdapter(this);
-        activeEventsList.setAdapter(adapter);
-
         activeEventsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(MyEventsActivity.this, HomeActivity.class));
+                EventDetailDBModel model = evList.get(position);
+                new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
             }
         });
 
@@ -308,25 +313,32 @@ public class MyEventsActivity extends FragmentActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    public void setEventsList(){
+        DatabaseHandler dbHandler = new DatabaseHandler(MyEventsActivity.this);
+        evList = dbHandler.getAllEvents();
+        adapter = new EventsAdapter(MyEventsActivity.this,evList);
+        activeEventsList.setAdapter(adapter);
+    }
+
     public class EventsAdapter extends BaseAdapter
     {
         LayoutInflater inflater;
         int darkBack,lightBack;
         Globals global;
-        EventDetailMainModel dataModel;
+        ArrayList<EventDetailDBModel> evList;
 
-        public EventsAdapter(Context c) {
+        public EventsAdapter(Context c,ArrayList<EventDetailDBModel> evList) {
             inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             darkBack = getResources().getColor(R.color.my_event_list_color_dark);
             lightBack = getResources().getColor(R.color.my_event_list_color_light);
 
             global = (Globals) c.getApplicationContext();
-            dataModel = global.getEventDetailMainModel();
+            this.evList = evList;
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return evList.size();
         }
 
         @Override
@@ -367,11 +379,13 @@ public class MyEventsActivity extends FragmentActivity {
                 convertView.setBackgroundColor(lightBack);
             }
 
-            holder.title.setText(""+dataModel.detailModel.Ev_Nm);
-            holder.location.setText("" + dataModel.detailModel.Ev_Addr_1_Txt + "," + dataModel.detailModel.Ev_City_Txt);
+            EventDetailDBModel dataModel = evList.get(position);
+
+            holder.title.setText(""+dataModel.getEvName());
+            holder.location.setText("" + dataModel.getEvAddrTxt() + "," + dataModel.getEvCityTxt());
             try {
                 Picasso.with(MyEventsActivity.this)
-                        .load(""+dataModel.detailModel.Ev_Img_Url)
+                        .load(""+dataModel.getEvImgUrl())
                         .transform(new CircleTransform())
                         .placeholder(R.drawable.icon)
                         .into(holder.eventImg);
@@ -381,12 +395,12 @@ public class MyEventsActivity extends FragmentActivity {
             }
 
             try {
-                String date = "" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm;
+                String date = "" + dataModel.getStartDate();
                 date = date.split("T")[0];
                 holder.date.setText(date);
             }catch (Exception e){
                 System.out.println(e.getStackTrace());
-                holder.date.setText("" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+                holder.date.setText("" + dataModel.getStartDate());
             }
 
             holder.prechkBtn.setTag(position);
@@ -400,11 +414,13 @@ public class MyEventsActivity extends FragmentActivity {
     public View.OnClickListener PreCheckClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            showPreCheckinDialog();
+
+            int pos = Integer.parseInt(v.getTag().toString());
+            showPreCheckinDialog(pos);
         }
     };
 
-    public void showPreCheckinDialog()
+    public void showPreCheckinDialog(final int pos)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Alert");
@@ -413,8 +429,8 @@ public class MyEventsActivity extends FragmentActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 preChkDialog.dismiss();
-                EventDetailMainModel mainModel = global.getEventDetailMainModel();
-                new ConfirmationCodeService(mainModel.detailModel.Ev_Id, mainModel.attendeeDetail.Id).execute("");
+                EventDetailDBModel dbModel = evList.get(pos);
+                new ConfirmationCodeService(dbModel.getEvId(),dbModel.getAttendeeId()).execute("");
             }
         });
 
@@ -473,6 +489,47 @@ public class MyEventsActivity extends FragmentActivity {
 
             }else if(res.responseStatus == GlobalConstants.ResponseStatus.Fail){
                 Toast.makeText(MyEventsActivity.this, ""+res.message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public class GetEventDetailsService extends AsyncTask<String,Integer,GlobalConstants.ResponseStatus>{
+
+        ProgressDialog pd;
+        String confirmationCode = "",lastName = "";
+
+        public GetEventDetailsService(String confirmationCode,String lastN) {
+            this.confirmationCode = confirmationCode;
+            this.lastName = lastN;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = ProgressDialog.show(MyEventsActivity.this,"","Loading...");
+        }
+
+        @Override
+        protected GlobalConstants.ResponseStatus doInBackground(String... params) {
+            GlobalConstants.ResponseStatus res = GlobalConstants.ResponseStatus.Fail;
+            try {
+                res = WebServiceHandler.getEventsListByAccessCode(MyEventsActivity.this, confirmationCode, lastName);
+            }catch (Exception e){
+                Log.e("Exception : ",e.getStackTrace().toString());
+            }
+            return res;
+        }
+
+        @Override
+        protected void onPostExecute(GlobalConstants.ResponseStatus status) {
+            super.onPostExecute(status);
+            pd.dismiss();
+            if(status == GlobalConstants.ResponseStatus.OK) {
+                startActivity(new Intent(MyEventsActivity.this, HomeActivity.class));
+            }else if(status == GlobalConstants.ResponseStatus.AuthorisationRequired) {
+
+            }else if(status == GlobalConstants.ResponseStatus.Fail){
+                Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.error_getting_details),Toast.LENGTH_LONG).show();
             }
         }
     }

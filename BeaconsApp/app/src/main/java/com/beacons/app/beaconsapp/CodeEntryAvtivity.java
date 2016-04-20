@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
@@ -28,6 +29,7 @@ import com.mobstac.beaconstac.utils.MSException;
 public class CodeEntryAvtivity extends BaseActivity {
 
     EditText codeEd,lastEd;
+    TextView myEventBtn,nearMeEventBtn,allEventBtn;
     public final int requestCode = 100;
     private BluetoothAdapter mBluetoothAdapter;
     private static final int REQUEST_ENABLE_BT = 1;
@@ -50,6 +52,10 @@ public class CodeEntryAvtivity extends BaseActivity {
         codeEd = (EditText) findViewById(R.id.code_ed);
         lastEd = (EditText) findViewById(R.id.last_name_ed);
 
+        myEventBtn = (TextView) findViewById(R.id.my_event_btn);
+        nearMeEventBtn = (TextView) findViewById(R.id.event_near_btn);
+        allEventBtn = (TextView) findViewById(R.id.all_event_btn);
+
         findViewById(R.id.activate_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +67,27 @@ public class CodeEntryAvtivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(CodeEntryAvtivity.this, ScannerActivity.class), requestCode);
+            }
+        });
+
+        myEventBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CodeEntryAvtivity.this, MyEventsActivity.class));
+            }
+        });
+
+        nearMeEventBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CodeEntryAvtivity.this, MyEventsActivity.class));
+            }
+        });
+
+        allEventBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CodeEntryAvtivity.this, MyEventsActivity.class));
             }
         });
     }
