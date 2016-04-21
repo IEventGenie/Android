@@ -8,5 +8,5 @@ public class AttendeeDetailCommonModel {
     public String Label = "";
     public String Value = "";
     public boolean IsEnabled;
-
+    public String Category = "";
 }

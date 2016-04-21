@@ -250,6 +250,7 @@ public class BeaconsDetector {
         @Override
         public void campedOnBeacon(Context context, MSBeacon beacon) {
             System.out.println(""+beacon.getId());
+            
         }
 
         @Override

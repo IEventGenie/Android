@@ -91,9 +91,13 @@ public class MyEventsActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        global.fragActivityResumed(this.getClass(), MyEventsActivity.this);
-        //Re-register receivers on resume
-        registerReceivers();
+        if(global.DoLogout){
+            this.finish();
+        }else {
+            global.fragActivityResumed(this.getClass(), MyEventsActivity.this);
+            //Re-register receivers on resume
+            registerReceivers();
+        }
     }
 
     @Override

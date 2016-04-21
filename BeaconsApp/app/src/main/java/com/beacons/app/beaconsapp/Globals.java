@@ -17,6 +17,8 @@ public class Globals extends Application {
         return eventDetailMainModel;
     }
 
+    public boolean DoLogout = false;
+
     public void setEventDetailMainModel(EventDetailMainModel eventDetailMainModel) {
         this.eventDetailMainModel = eventDetailMainModel;
     }

@@ -45,6 +45,15 @@ public class CodeEntryAvtivity extends BaseActivity {
         checkBluetoothAdaptability();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(global.DoLogout){
+            global.DoLogout = false;
+        }
+    }
+
     public void findViewsApplyAction()
     {
         global = (Globals) getApplicationContext();
@@ -201,6 +210,9 @@ public class CodeEntryAvtivity extends BaseActivity {
                 }catch (Exception e){
                     Log.e("Inserting ev in db",""+e.getStackTrace());
                 }
+
+                codeEd.setText("");
+                lastEd.setText("");
 
                 startActivity(new Intent(CodeEntryAvtivity.this, MyEventsActivity.class));
                 //CodeEntryAvtivity.this.finish();

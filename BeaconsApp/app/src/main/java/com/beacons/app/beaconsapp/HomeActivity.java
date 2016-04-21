@@ -78,7 +78,11 @@ public class HomeActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        global.fragActivityResumed(this.getClass(),HomeActivity.this);
+        if(global.DoLogout){
+            this.finish();
+        }else{
+            global.fragActivityResumed(this.getClass(),HomeActivity.this);
+        }
     }
 
     @Override

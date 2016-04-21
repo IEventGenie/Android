@@ -405,88 +405,111 @@ public class ResponseParser {
                 attDetModel.AttendeeTypeId = attDetObj.getString(GlobalConstants.ATTENDEE_TYPE_ID);
             }
 
+            ArrayList<AttendeeDetailCommonModel> customFieldsList = new ArrayList<AttendeeDetailCommonModel>();
+
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_1))
             {
                 attDetModel.CustomField1 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_1));
+                customFieldsList.add(attDetModel.CustomField1);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_2))
             {
                 attDetModel.CustomField2 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_2));
+                customFieldsList.add(attDetModel.CustomField2);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_3))
             {
                 attDetModel.CustomField3 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_3));
+                customFieldsList.add(attDetModel.CustomField3);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_4))
             {
                 attDetModel.CustomField4 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_4));
+                customFieldsList.add(attDetModel.CustomField4);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_5))
             {
                 attDetModel.CustomField5 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_5));
+                customFieldsList.add(attDetModel.CustomField5);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_6))
             {
                 attDetModel.CustomField6 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_6));
+                customFieldsList.add(attDetModel.CustomField6);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_7))
             {
                 attDetModel.CustomField7 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_7));
+                customFieldsList.add(attDetModel.CustomField7);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_8))
             {
                 attDetModel.CustomField8 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_8));
+                customFieldsList.add(attDetModel.CustomField8);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_9))
             {
                 attDetModel.CustomField9 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_9));
+                customFieldsList.add(attDetModel.CustomField9);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_10))
             {
                 attDetModel.CustomField10 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_10));
+                customFieldsList.add(attDetModel.CustomField10);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_11))
             {
                 attDetModel.CustomField11 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_11));
+                customFieldsList.add(attDetModel.CustomField11);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_12))
             {
                 attDetModel.CustomField12 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_12));
+                customFieldsList.add(attDetModel.CustomField12);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_13))
             {
                 attDetModel.CustomField13 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_13));
+                customFieldsList.add(attDetModel.CustomField13);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_14))
             {
                 attDetModel.CustomField14 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_14));
+                customFieldsList.add(attDetModel.CustomField14);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_15))
             {
                 attDetModel.CustomField15 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_15));
+                customFieldsList.add(attDetModel.CustomField15);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_16))
             {
                 attDetModel.CustomField16 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_16));
+                customFieldsList.add(attDetModel.CustomField16);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_17))
             {
                 attDetModel.CustomField17 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_17));
+                customFieldsList.add(attDetModel.CustomField17);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_18))
             {
                 attDetModel.CustomField18 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_18));
+                customFieldsList.add(attDetModel.CustomField18);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_19))
             {
                 attDetModel.CustomField19 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_19));
+                customFieldsList.add(attDetModel.CustomField19);
             }
             if(attDetObj.has(GlobalConstants.CUSTOME_FIELD_20))
             {
                 attDetModel.CustomField20 = getCustomAttendeeFields(attDetObj.getJSONObject(GlobalConstants.CUSTOME_FIELD_20));
+                customFieldsList.add(attDetModel.CustomField20);
             }
 
             returnModel.attendeeDetail = attDetModel;
+            returnModel.attendeeMenuFieldsList = customFieldsList;
             //=====Attendee Detail Parsing End====
 
             //=====Category Type Parsing Start====
@@ -498,7 +521,7 @@ public class ResponseParser {
                 for (int i = 0; i < catTypeArr.length(); i++) {
                     CategoryTypeModel model = new CategoryTypeModel();
 
-                    JSONObject catDetObj = catTypeArr.getJSONObject(0);
+                    JSONObject catDetObj = catTypeArr.getJSONObject(i);
                     ArrayList<CategoryCommonModel> childModels = new ArrayList<CategoryCommonModel>();
 
                     if(catDetObj.has(GlobalConstants.CHILDREN)){
@@ -556,6 +579,9 @@ public class ResponseParser {
             }
             if (job.has(GlobalConstants.IS_ENABLED)) {
                 model.IsEnabled = job.getBoolean(GlobalConstants.IS_ENABLED);
+            }
+            if (job.has(GlobalConstants.CATEGORY)) {
+                model.Category = job.getString(GlobalConstants.CATEGORY);
             }
         }catch (Exception e){
             System.out.println(e.getStackTrace());

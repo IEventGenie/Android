@@ -27,7 +27,9 @@ public class GlobalConstants {
     public static final String CHECKOUT_WITH_CONFIRMATION_CODE_URL = "CheckoutWithConfirmation";
     //========
 
-
+    //=======
+    public static final String SELECTED_MENU = "selected_menu";
+    //=======
     //URL Constants===
     public static final String CONFIRMATION_CODE_PARAM = "confirmationCode";
     public static final String LAST_NAME_PARAM = "lastName";
@@ -163,7 +165,6 @@ public class GlobalConstants {
     public static final String LABEL= "Label";
     public static final String VALUE= "Value";
     public static final String IS_ENABLED= "IsEnabled";
-
 
     public static final String CHILDREN = "Children";
     public static final String TEXT = "Text";

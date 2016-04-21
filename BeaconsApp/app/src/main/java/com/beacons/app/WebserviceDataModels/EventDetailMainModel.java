@@ -17,6 +17,7 @@ public class EventDetailMainModel {
 
     //attendee details==
     public AttendeeDetailModel attendeeDetail = new AttendeeDetailModel();
+    public ArrayList<AttendeeDetailCommonModel> attendeeMenuFieldsList = new ArrayList<AttendeeDetailCommonModel>();
     //==================
 
     //Category details==
