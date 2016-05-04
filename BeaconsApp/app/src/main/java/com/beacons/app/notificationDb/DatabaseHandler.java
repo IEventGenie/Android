@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
- 
+
     // All Static variables
     // Database Version
     private static final int DATABASE_VERSION = 1;
- 
+
     // Database Name
     private static final String DATABASE_NAME = "becons_notification_DB";
- 
+
     // Table name
     private static final String TABLE_CONFIRM_CODE_EVENTS = "confimation_code_events";
     private static final String TABLE_NOTIFICATION = "notifications";
@@ -37,7 +37,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_EV_NAME = "ev_name";
     private static final String KEY_ENABLE_PRECHECK_IN = "enable_prechk_in";
     private static final String KEY_ATTENDEE_ID = "attendee_id";
-    private static final String KEY_START_DATE = "start_date";
+    private static final String KEY_CHKIN_START_DATE = "chk_start_date";
+    private static final String KEY_CHKIN_END_DATE = "chk_end_date";
+    private static final String KEY_PRE_CHKIN_START_DATE = "pre_chk_start_date";
+    private static final String KEY_PRE_CHKIN_END_DATE = "pre_chk_end_date";
+    private static final String KEY_ENABLE_CHKIN = "enable_chk_in";
+    private static final String KEY_EVENT_STATUS = "event_status";
 
     // Contacts Table Columns names
     private static final String KEY_TITLE = "title";
@@ -47,7 +52,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
- 
+
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -63,7 +68,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_EV_NAME + " TEXT," +
                 KEY_ENABLE_PRECHECK_IN + " TEXT," +
                 KEY_ATTENDEE_ID + " TEXT," +
-                KEY_START_DATE +" TEXT " +
+                KEY_CHKIN_START_DATE +" TEXT," +
+                KEY_CHKIN_END_DATE +" TEXT,"+
+                KEY_PRE_CHKIN_START_DATE +" TEXT,"+
+                KEY_PRE_CHKIN_END_DATE +" TEXT,"+
+                KEY_ENABLE_CHKIN +" TEXT,"+
+                KEY_EVENT_STATUS +" TEXT "+
                 ")";
 
 
@@ -73,7 +83,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_CONFIRMATION_CODE_EVENT_TABLE);
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
- 
+
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -91,41 +101,64 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return dateFormat.format(date);
     }
 
-    // Adding new Notification
+    // Adding new Event
     public void addEventDetail(EventDetailDBModel evdet) {
 
-        boolean canInsert = true;
-
         ArrayList<EventDetailDBModel> evList = getAllEvents();
-        for (EventDetailDBModel model : evList) {
+        String id = "";
+        boolean doInsert = true;
+        for(EventDetailDBModel model : evList){
             if(model.getEvId().equals(evdet.getEvId())){
-                canInsert = false;
+                id = model.getId();
+                doInsert = false;
             }
         }
 
-        if(canInsert) {
-            SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
 
-            ContentValues values = new ContentValues();
-            values.put(KEY_CONFIRMATION_CODE, evdet.getConfirmCode());
-            values.put(KEY_LAST_NAME, evdet.getLastName());
-            values.put(KEY_EV_ID, evdet.getEvId());
-            values.put(KEY_EV_ADDRESS_TXT, evdet.getEvAddrTxt());
-            values.put(KEY_EV_CITY_TXT, evdet.getEvCityTxt());
-            values.put(KEY_EV_IMG_URL, evdet.getEvImgUrl());
-            values.put(KEY_EV_LOC_TXT, evdet.getEvLocTxt());
-            values.put(KEY_EV_NAME, evdet.getEvName());
-            values.put(KEY_ENABLE_PRECHECK_IN, evdet.getEnablePrechkIn());
-            values.put(KEY_ATTENDEE_ID, evdet.getAttendeeId());
-            values.put(KEY_START_DATE, evdet.getStartDate());
+        ContentValues values = new ContentValues();
+        values.put(KEY_CONFIRMATION_CODE, evdet.getConfirmCode());
+        values.put(KEY_LAST_NAME, evdet.getLastName());
+        values.put(KEY_EV_ID, evdet.getEvId());
+        values.put(KEY_EV_ADDRESS_TXT, evdet.getEvAddrTxt());
+        values.put(KEY_EV_CITY_TXT, evdet.getEvCityTxt());
+        values.put(KEY_EV_IMG_URL, evdet.getEvImgUrl());
+        values.put(KEY_EV_LOC_TXT, evdet.getEvLocTxt());
+        values.put(KEY_EV_NAME, evdet.getEvName());
+        values.put(KEY_ENABLE_PRECHECK_IN, evdet.getEnablePrechkIn());
+        values.put(KEY_ATTENDEE_ID, evdet.getAttendeeId());
+        values.put(KEY_CHKIN_START_DATE, evdet.getStartDate());
+        values.put(KEY_CHKIN_END_DATE, evdet.getChkInEndDate());
+        values.put(KEY_PRE_CHKIN_START_DATE, evdet.getPreChkInStrtDate());
+        values.put(KEY_PRE_CHKIN_END_DATE, evdet.getPreChkInEndDate());
+        values.put(KEY_ENABLE_CHKIN, evdet.getEnablCheckin());
+        values.put(KEY_EVENT_STATUS, evdet.getEventStatus());
 
+        if(doInsert) {
             // Inserting Row
-            long id = db.insert(TABLE_CONFIRM_CODE_EVENTS, null, values);
+            long res = db.insert(TABLE_CONFIRM_CODE_EVENTS, null, values);
+            db.close(); // Closing database connection
+        }else{
+            //UPDATE
+            //add Existing id
+            values.put(KEY_ID,id);
+
+            String where = KEY_EV_ID+"=?";
+            String[] whereArgs = new String[]{String.valueOf(evdet.getEvId())};
+            long res = db.update(TABLE_CONFIRM_CODE_EVENTS,values,where,whereArgs);
             db.close(); // Closing database connection
         }
     }
 
-    // Getting All Contacts
+    public int deleteEvent(String evId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int res = db.delete(TABLE_CONFIRM_CODE_EVENTS, KEY_EV_ID + " = ?",
+                new String[] { evId });
+        db.close();
+        return res;
+    }
+
+    // Getting All EVENTS
     public ArrayList<EventDetailDBModel> getAllEvents() {
         ArrayList<EventDetailDBModel> eventList = new ArrayList<EventDetailDBModel>();
         // Select All Query
@@ -150,9 +183,107 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 event.setEnablePrechkIn(cursor.getString(9));
                 event.setAttendeeId(cursor.getString(10));
                 event.setStartDate(cursor.getString(11));
+                event.setChkInEndDate(cursor.getString(12));
+                event.setPreChkInStrtDate(cursor.getString(13));
+                event.setPreChkInEndDate(cursor.getString(14));
+                event.setEnablCheckin(cursor.getString(15));
+                event.setEventStatus(cursor.getString(16));
+
+                // Adding events to list
+                eventList.add(event);
+            } while (cursor.moveToNext());
+        }
+
+        // return events list
+        return eventList;
+    }
+
+    // Getting Active EVENTS
+    public ArrayList<EventDetailDBModel> getActiveEvents() {
+        ArrayList<EventDetailDBModel> eventList = new ArrayList<EventDetailDBModel>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_CONFIRM_CODE_EVENTS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                EventDetailDBModel event = new EventDetailDBModel();
+                event.setId(cursor.getString(0));
+                event.setConfirmCode(cursor.getString(1));
+                event.setLastName(cursor.getString(2));
+                event.setEvId(cursor.getString(3));
+                event.setEvAddrTxt(cursor.getString(4));
+                event.setEvCityTxt(cursor.getString(5));
+                event.setEvImgUrl(cursor.getString(6));
+                event.setEvLocTxt(cursor.getString(7));
+                event.setEvName(cursor.getString(8));
+                event.setEnablePrechkIn(cursor.getString(9));
+                event.setAttendeeId(cursor.getString(10));
+                event.setStartDate(cursor.getString(11));
+                event.setChkInEndDate(cursor.getString(12));
+                event.setPreChkInStrtDate(cursor.getString(13));
+                event.setPreChkInEndDate(cursor.getString(14));
+                event.setEnablCheckin(cursor.getString(15));
+                event.setEventStatus(cursor.getString(16));
 
                 // Adding contact to list
+                if(!event.getEventStatus().equals("Closed")) {
+                    eventList.add(event);
+                }
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return eventList;
+    }
+
+    // Getting Past EVENTS
+    public ArrayList<EventDetailDBModel> getPastEvents() {
+        ArrayList<EventDetailDBModel> eventList = new ArrayList<EventDetailDBModel>();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Select All Query
+        Cursor cursor = db.query(TABLE_CONFIRM_CODE_EVENTS, new String[] { KEY_ID, KEY_CONFIRMATION_CODE, KEY_LAST_NAME, KEY_EV_ID,
+                        KEY_EV_ADDRESS_TXT,KEY_EV_CITY_TXT,KEY_EV_IMG_URL,KEY_EV_LOC_TXT,KEY_EV_NAME,KEY_ENABLE_PRECHECK_IN,KEY_ATTENDEE_ID,
+                        KEY_CHKIN_START_DATE,KEY_CHKIN_END_DATE,KEY_PRE_CHKIN_START_DATE,KEY_PRE_CHKIN_END_DATE,KEY_ENABLE_CHKIN,KEY_EVENT_STATUS}, KEY_EVENT_STATUS + "=?",
+                new String[] { "Closed" }, null, null, null, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        /*String selectQuery = "SELECT  * FROM " + TABLE_CONFIRM_CODE_EVENTS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);*/
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                EventDetailDBModel event = new EventDetailDBModel();
+                event.setId(cursor.getString(0));
+                event.setConfirmCode(cursor.getString(1));
+                event.setLastName(cursor.getString(2));
+                event.setEvId(cursor.getString(3));
+                event.setEvAddrTxt(cursor.getString(4));
+                event.setEvCityTxt(cursor.getString(5));
+                event.setEvImgUrl(cursor.getString(6));
+                event.setEvLocTxt(cursor.getString(7));
+                event.setEvName(cursor.getString(8));
+                event.setEnablePrechkIn(cursor.getString(9));
+                event.setAttendeeId(cursor.getString(10));
+                event.setStartDate(cursor.getString(11));
+                event.setChkInEndDate(cursor.getString(12));
+                event.setPreChkInStrtDate(cursor.getString(13));
+                event.setPreChkInEndDate(cursor.getString(14));
+                event.setEnablCheckin(cursor.getString(15));
+                event.setEventStatus(cursor.getString(16));
+
+                // Adding event to list
                 eventList.add(event);
+
             } while (cursor.moveToNext());
         }
 
@@ -163,7 +294,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Adding new Notification
     public void addNotification(BeaconNotification notification) {
         SQLiteDatabase db = this.getWritableDatabase();
- 
+
         ContentValues values = new ContentValues();
         values.put(KEY_TITLE, notification.getTitle());
         values.put(KEY_TYPE, notification.getType());
@@ -173,33 +304,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         long id = db.insert(TABLE_NOTIFICATION, null, values);
         db.close(); // Closing database connection
     }
- 
+
     // Getting single contact
-    public BeaconNotification getNotification(String title) {
+    BeaconNotification getNotification(String title) {
         SQLiteDatabase db = this.getReadableDatabase();
- 
+
         Cursor cursor = db.query(TABLE_NOTIFICATION, new String[] { KEY_ID, KEY_TITLE, KEY_TYPE, KEY_DATE }, KEY_TITLE + "=?",
                 new String[] { String.valueOf(title) }, null, null, null, null);
 
         if (cursor != null)
             cursor.moveToFirst();
- 
+
         BeaconNotification noti = new BeaconNotification(cursor.getString(1), cursor.getString(2));
         noti.setId(cursor.getString(0));
         noti.setDate(cursor.getString(3));
         // return contact
         return noti;
     }
-     
+
     // Getting All Contacts
     public ArrayList<BeaconNotification> getAllNotification() {
         ArrayList<BeaconNotification> beaconNotificationList = new ArrayList<BeaconNotification>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATION + " ORDER BY "+ KEY_DATE +" DESC";
- 
+
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
- 
+
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
@@ -212,25 +343,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 beaconNotificationList.add(noti);
             } while (cursor.moveToNext());
         }
- 
+
         // return contact list
         return beaconNotificationList;
     }
- 
+
     public int updateBeaconNotification(BeaconNotification noti) {
         SQLiteDatabase db = this.getWritableDatabase();
- 
+
         ContentValues values = new ContentValues();
         values.put(KEY_ID,noti.getId());
         values.put(KEY_TITLE, noti.getTitle());
         values.put(KEY_TYPE, noti.getType());
         values.put(KEY_DATE,noti.getDate());
- 
+
         // updating row
         return db.update(TABLE_NOTIFICATION, values, KEY_ID + " = ?",
                 new String[] { String.valueOf(noti.getId()) });
     }
- 
+
     public void deleteBeaconNotification(BeaconNotification noti) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NOTIFICATION, KEY_ID + " = ?",
@@ -243,9 +374,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         cursor.close();
- 
+
         // return count
         return cursor.getCount();
     }
- 
+
 }

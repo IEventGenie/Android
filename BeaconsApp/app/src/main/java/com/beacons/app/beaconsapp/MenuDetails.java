@@ -43,7 +43,6 @@ public class MenuDetails extends BaseActivity {
 
         global = (Globals) getApplicationContext();
 
-        ((TextView)actionBar.findViewById(R.id.title)).setText("Details");
         detailContainer = (LinearLayout) findViewById(R.id.detail_container);
 
         setupData();
@@ -52,6 +51,8 @@ public class MenuDetails extends BaseActivity {
     public void setupData(){
         EventDetailMainModel dataModel = global.getEventDetailMainModel();
         String menuTag = getIntent().getStringExtra(GlobalConstants.SELECTED_MENU);
+
+        ((TextView)actionBar.findViewById(R.id.title)).setText(""+menuTag);
 
         ArrayList<AttendeeDetailCommonModel> detailList = new ArrayList<AttendeeDetailCommonModel>();
         try {

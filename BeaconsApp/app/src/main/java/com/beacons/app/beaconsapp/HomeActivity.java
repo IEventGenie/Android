@@ -10,6 +10,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,6 +33,8 @@ public class HomeActivity extends FragmentActivity {
     TextView titleTxt,location,date;
     EventDetailMainModel dataModel;
     ProgressBar progress;
+    LinearLayout webviewLay;
+    TextView noWebText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,9 @@ public class HomeActivity extends FragmentActivity {
         global = (Globals) getApplicationContext();
         global.setFragActivity(this);
 
+        webviewLay = (LinearLayout) findViewById(R.id.web_view_lay);
+        noWebText = (TextView) findViewById(R.id.no_web_text);
+
         dataModel = global.getEventDetailMainModel();
 
         progress = (ProgressBar) findViewById(R.id.progressBar);
@@ -73,6 +79,8 @@ public class HomeActivity extends FragmentActivity {
 
         setWebView();
         setEventData();
+
+
     }
 
     @Override
@@ -98,17 +106,22 @@ public class HomeActivity extends FragmentActivity {
     }
 
     public void setWebView(){
-        webView = (WebView)findViewById(R.id.web_view);
-        //webView.setWebViewClient(new MyBrowser());
-        webView.setWebChromeClient(new MyBrowser());
-
         String url = ""+dataModel.detailModel.Ev_Web_Url;
-        webView.getSettings().setLoadsImagesAutomatically(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        webView.loadUrl(url);
+        if(url.length() > 0) {
+            webView = (WebView) findViewById(R.id.web_view);
+            //webView.setWebViewClient(new MyBrowser());
+            webView.setWebChromeClient(new MyBrowser());
 
-        progress.setProgress(0);
+            webView.getSettings().setLoadsImagesAutomatically(true);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+            webView.loadUrl(url);
+
+            progress.setProgress(0);
+            noWebText.setVisibility(View.GONE);
+        }else{
+            noWebText.setVisibility(View.VISIBLE);
+        }
     }
 
     private class MyBrowser extends WebChromeClient {

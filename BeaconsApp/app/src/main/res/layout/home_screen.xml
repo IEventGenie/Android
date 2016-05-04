@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:minHeight="80dp"
         android:background="@color/my_event_list_color_dark"
+        android:visibility="gone"
         android:paddingLeft="10dp"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
@@ -114,24 +115,43 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="5dp"
-            />
-
-        <WebView
-            android:id="@+id/web_view"
+        <LinearLayout
+            android:id="@+id/web_view_lay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="5dp"
+                />
+
+            <WebView
+                android:id="@+id/web_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/no_web_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Website found..."
+            android:textSize="18sp"
+            android:textColor="@color/pre_chk_text_color"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
             />
-    </LinearLayout>
+
+    </RelativeLayout>
 
 </LinearLayout>

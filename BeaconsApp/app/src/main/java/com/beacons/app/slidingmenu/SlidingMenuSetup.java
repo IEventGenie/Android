@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,7 +24,9 @@ import com.beacons.app.beaconsapp.HomeActivity;
 import com.beacons.app.beaconsapp.MenuDetails;
 import com.beacons.app.beaconsapp.R;
 import com.beacons.app.constants.GlobalConstants;
+import com.beacons.app.utilities.CircleTransform;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +42,9 @@ public class SlidingMenuSetup {
     ExpandableListView menuList;
     ArrayList<String> listDataHeader = new ArrayList<String>();
     HashMap<String, ArrayList<String>> listChildData = new HashMap<String, ArrayList<String>>();
+    ImageView eventImg;
+    TextView titleTxt,location,date;
+    EventDetailMainModel dataModel;
 
     public SlidingMenuSetup(Activity act) {
         attachToAct = act;
@@ -58,7 +64,7 @@ public class SlidingMenuSetup {
         menu.setMenu(R.layout.menu);
 
         setUpData();
-
+        setEventData();
         return menu;
     }
 
@@ -129,6 +135,34 @@ public class SlidingMenuSetup {
                 attachToAct.startActivity(intent);*/
             }
         });
+    }
+
+    public void setEventData(){
+        try {
+            eventImg = (ImageView) menu.findViewById(R.id.event_img);
+            titleTxt = (TextView) menu.findViewById(R.id.title_sec);
+            location = (TextView) menu.findViewById(R.id.location);
+            date = (TextView) menu.findViewById(R.id.date);
+
+            titleTxt.setText("" + dataModel.detailModel.Ev_Nm);
+
+            location.setText("" + dataModel.detailModel.Ev_Addr_1_Txt + "," + dataModel.detailModel.Ev_City_Txt);
+            Picasso.with(attachToAct)
+                    .load("" + dataModel.detailModel.Ev_Img_Url)
+                    .transform(new CircleTransform())
+                    .placeholder(R.drawable.icon)
+                    .into(eventImg);
+            try {
+                String dd = "" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm;
+                dd = dd.split("T")[0];
+                date.setText(dd);
+            } catch (Exception e) {
+                System.out.println(e.getStackTrace());
+                date.setText("" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
     }
 
     public class MenuExpandableAdapter extends BaseExpandableListAdapter{
@@ -223,142 +257,4 @@ public class SlidingMenuSetup {
         }
     }
 
-    /*public void setUpMenuItems(EventDetailMainModel dataModel){
-
-        LayoutInflater inflater = (LayoutInflater) attachToAct.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        LinearLayout itemsContainer = (LinearLayout)menu.findViewById(R.id.item_container);
-
-        if(dataModel.attendeeDetail.CustomField1.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField1.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField2.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField2.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField3.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField3.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField4.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField4.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField5.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField5.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField6.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField6.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField7.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField7.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField8.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField8.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField9.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField9.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField10.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField10.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField11.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField11.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField12.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField12.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField13.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField13.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField14.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField14.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField15.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField15.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField16.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField16.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField17.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField17.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField18.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField18.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField19.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField19.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-        if(dataModel.attendeeDetail.CustomField20.IsEnabled){
-            LinearLayout lay = (LinearLayout)inflater.inflate(R.layout.menu_item, null);
-            ((TextView)lay.findViewById(R.id.title)).setText(dataModel.attendeeDetail.CustomField20.Label);
-            lay.setOnClickListener(MenuItemClick);
-            itemsContainer.addView(lay);
-        }
-
-        itemsContainer.invalidate();
-    }
-
-    public View.OnClickListener MenuItemClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-           //attachToAct.startActivity(new Intent(attachToAct, MenuDetails.class));
-            attachToAct.startActivity(new Intent(attachToAct, BeaconsListActivity.class));
-            menu.showContent();
-        }
-    };*/
 }

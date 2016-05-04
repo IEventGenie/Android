@@ -78,10 +78,11 @@ public class BeaconstacBroadcastReceiver extends BeaconstacReceiver {
                     activityIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
+
             Notification mBuilder = new Notification.Builder(context.getApplicationContext())
                     .setContentText(text)
                     .setContentTitle("BeaconstacExample")
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.app_icon)
                     .setContentIntent(pendingIntent).build();
             notificationManager = (NotificationManager)
                     context.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);

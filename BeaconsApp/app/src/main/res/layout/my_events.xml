@@ -77,22 +77,45 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ListView
+       <com.baoyz.swipemenulistview.SwipeMenuListView
             android:id="@+id/active_event_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:dividerHeight="0.5dp"
             android:divider="@color/my_event_list_div_color"
-            />
+            android:layout_above="@+id/activate_event_btn"
+           />
 
-        <ListView
+        <com.baoyz.swipemenulistview.SwipeMenuListView
             android:id="@+id/past_event_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:dividerHeight="0.5dp"
             android:visibility="gone"
             android:divider="@color/my_event_list_div_color"
+            android:layout_above="@+id/activate_event_btn"
             />
+
+        <LinearLayout
+            android:id="@+id/activate_event_btn"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:background="@android:color/white"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Activate Events"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:background="@color/orange_app_color"
+                />
+        </LinearLayout>
+
 
     </RelativeLayout>
 

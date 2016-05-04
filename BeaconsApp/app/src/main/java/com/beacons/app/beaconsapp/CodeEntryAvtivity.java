@@ -192,6 +192,7 @@ public class CodeEntryAvtivity extends BaseActivity {
             if(status == GlobalConstants.ResponseStatus.OK) {
                 try {
                     EventDetailMainModel dataModel = global.getEventDetailMainModel();
+
                     EventDetailDBModel dbModel = new EventDetailDBModel();
                     dbModel.setConfirmCode(confirmationCode);
                     dbModel.setLastName(lastName);
@@ -204,6 +205,11 @@ public class CodeEntryAvtivity extends BaseActivity {
                     dbModel.setEnablePrechkIn("" + dataModel.detailModel.Enabl_PreCheckin);
                     dbModel.setAttendeeId(dataModel.attendeeDetail.Id);
                     dbModel.setStartDate(dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+                    dbModel.setChkInEndDate(dataModel.detailModel.Ev_Chk_In_End_Dttm);
+                    dbModel.setPreChkInStrtDate(dataModel.detailModel.Ev_Early_Chk_In_Strt_Dttm);
+                    dbModel.setPreChkInEndDate(dataModel.detailModel.Ev_Early_Chk_In_End_Dttm);
+                    dbModel.setEnablCheckin(dataModel.detailModel.Enabl_Checkin);
+                    dbModel.setEventStatus(dataModel.detailModel.Ev_Sts_Cd);
 
                     DatabaseHandler dbHandler = new DatabaseHandler(CodeEntryAvtivity.this);
                     dbHandler.addEventDetail(dbModel);

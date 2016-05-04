@@ -10,6 +10,7 @@ package com.beacons.app.qrcodescanner;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -25,6 +26,7 @@ import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /* Import ZBar Class files */
@@ -52,6 +54,9 @@ public class ScannerActivity extends Activity
 
     private boolean barcodeScanned = false;
     private boolean previewing = true;
+    private boolean isFlashOn = false;
+    RelativeLayout flashBtn;
+
 
     static {
         System.loadLibrary("iconv");
@@ -81,21 +86,86 @@ public class ScannerActivity extends Activity
         scanButton = (Button)findViewById(R.id.ScanButton);
 
         scanButton.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    if (barcodeScanned) {
-                        barcodeScanned = false;
-                        scanText.setText("Scanning...");
+            public void onClick(View v) {
+                if (barcodeScanned) {
+                    barcodeScanned = false;
+                    scanText.setText("Scanning...");
+                    mCamera.setPreviewCallback(previewCb);
+                    mCamera.startPreview();
+                    previewing = true;
+                    mCamera.autoFocus(autoFocusCB);
+                }
+            }
+        });
+
+        flashBtn = (RelativeLayout)findViewById(R.id.flash_btn);
+
+        if(!this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)){
+            flashBtn.setVisibility(View.GONE);
+        }
+
+        flashBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    if(isFlashOn) {
+                        mCamera.stopPreview();
+                        mCamera.setPreviewCallback(null);
+
+                        Parameters params = mCamera.getParameters();
+                        params.setFlashMode(Parameters.FLASH_MODE_OFF);
+                        mCamera.setParameters(params);
                         mCamera.setPreviewCallback(previewCb);
                         mCamera.startPreview();
                         previewing = true;
-                        mCamera.autoFocus(autoFocusCB);
+                        //mCamera.autoFocus(autoFocusCB);
+                        isFlashOn = false;
+                    }else{
+                        mCamera.stopPreview();
+                        mCamera.setPreviewCallback(null);
+
+                        Parameters params = mCamera.getParameters();
+                        params.setFlashMode(Parameters.FLASH_MODE_TORCH);
+                        mCamera.setParameters(params);
+                        mCamera.setPreviewCallback(previewCb);
+                        mCamera.startPreview();
+                        previewing = true;
+                        //mCamera.autoFocus(autoFocusCB);
+                        isFlashOn = true;
                     }
                 }
-            });
+                catch(Exception e){
+                    Log.e("ex on flash",""+e.getStackTrace());
+                    previewing = false;
+                    mCamera.setPreviewCallback(null);
+                    mCamera.release();
+                    mCamera = null;
+
+                    restartCamera();
+                }
+            }
+        });
+    }
+
+    public void restartCamera(){
+        mCamera = getCameraInstance();
+        Parameters params = mCamera.getParameters();
+        params.setFlashMode(Parameters.FLASH_MODE_OFF);
+        mCamera.setParameters(params);
+        mCamera.setPreviewCallback(previewCb);
+        mCamera.startPreview();
+        previewing = true;
+        mCamera.autoFocus(autoFocusCB);
     }
 
     public void onPause() {
         super.onPause();
+        releaseCamera();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         releaseCamera();
     }
 
@@ -105,6 +175,7 @@ public class ScannerActivity extends Activity
         try {
             c = Camera.open();
         } catch (Exception e){
+            Log.e("camera","error : "+e.getStackTrace());
         }
         return c;
     }
@@ -116,17 +187,18 @@ public class ScannerActivity extends Activity
             mCamera.release();
             mCamera = null;
         }
+
     }
 
     private Runnable doAutoFocus = new Runnable() {
-            public void run() {
-                if (previewing)
-                    mCamera.autoFocus(autoFocusCB);
-            }
-        };
+        public void run() {
+            if (previewing)
+                mCamera.autoFocus(autoFocusCB);
+        }
+    };
 
     PreviewCallback previewCb = new PreviewCallback() {
-            public void onPreviewFrame(byte[] data, Camera camera) {
+        public void onPreviewFrame(byte[] data, Camera camera) {
             Parameters parameters = camera.getParameters();
             Size size = parameters.getPreviewSize();
 
@@ -154,13 +226,13 @@ public class ScannerActivity extends Activity
                 setResult(RESULT_OK, intent);
                 finish();
             }
-            }
-        };
+        }
+    };
 
     // Mimic continuous auto-focusing
     AutoFocusCallback autoFocusCB = new AutoFocusCallback() {
-            public void onAutoFocus(boolean success, Camera camera) {
-                autoFocusHandler.postDelayed(doAutoFocus, 1000);
-            }
-        };
+        public void onAutoFocus(boolean success, Camera camera) {
+            autoFocusHandler.postDelayed(doAutoFocus, 1000);
+        }
+    };
 }

@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -22,12 +24,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.WebserviceDataModels.ResponseModel;
 import com.beacons.app.constants.GlobalConstants;
 import com.beacons.app.notificationDb.DatabaseHandler;
 import com.beacons.app.notificationDb.EventDetailDBModel;
 import com.beacons.app.utilities.CircleTransform;
+import com.beacons.app.utilities.Utilities;
 import com.beacons.app.webservices.WebServiceHandler;
 import com.pushwoosh.BasePushMessageReceiver;
 import com.pushwoosh.BaseRegistrationReceiver;
@@ -41,8 +48,8 @@ public class MyEventsActivity extends FragmentActivity {
 
 
     RelativeLayout actionBar;
-    ListView activeEventsList,pastEventsList;
-    EventsAdapter adapter;
+    SwipeMenuListView activeEventsList,pastEventsList;
+    EventsAdapter activeAdapter,pastAdapter;
     RelativeLayout activeTab,pastTab;
     TextView activeText,pastText;
     View activeTabStrip,pastTabStrip;
@@ -52,6 +59,10 @@ public class MyEventsActivity extends FragmentActivity {
     Globals global;
     AlertDialog preChkDialog;
     ArrayList<EventDetailDBModel> evList;
+    ArrayList<EventDetailDBModel> evPastList;
+    DatabaseHandler dbHandler;
+    public final int FOR_ACTIVE_LIST = 0;
+    public final int FOR_PAST_LIST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,13 +151,22 @@ public class MyEventsActivity extends FragmentActivity {
 
     public void findViewsApplyActions() {
 
-        activeEventsList = (ListView) findViewById(R.id.active_event_list);
-        pastEventsList = (ListView) findViewById(R.id.past_event_list);
+        activeEventsList = (SwipeMenuListView) findViewById(R.id.active_event_list);
+        pastEventsList = (SwipeMenuListView) findViewById(R.id.past_event_list);
+
 
         activeEventsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 EventDetailDBModel model = evList.get(position);
+                new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
+            }
+        });
+
+        pastEventsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                EventDetailDBModel model = evPastList.get(position);
                 new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
             }
         });
@@ -196,10 +216,99 @@ public class MyEventsActivity extends FragmentActivity {
             }
         });
 
+        findViewById(R.id.activate_event_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyEventsActivity.this.finish();
+            }
+        });
+
+        setListSlidingOptions();
+
+    }
+
+    public void setListSlidingOptions() {
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                        0x3F, 0x25)));
+                // set item width
+                deleteItem.setWidth(Utilities.dp2px(MyEventsActivity.this, 90));
+                // set a icon
+                //deleteItem.setIcon(R.drawable.warning);
+                deleteItem.setTitle("Delete");
+                deleteItem.setTitleSize(14);
+                deleteItem.setTitleColor(Color.WHITE);
+                // add to menu
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
+        // set creator
+        activeEventsList.setMenuCreator(creator);
+        pastEventsList.setMenuCreator(creator);
+
+        // Left
+        activeEventsList.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+        pastEventsList.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+
+        activeEventsList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        // delete
+                        String id = evList.get(position).getEvId();
+                        int res = dbHandler.deleteEvent(id);
+                        //if(res == 1){
+                            evList.remove(position);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    activeAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        //}
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
+
+        pastEventsList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        // delete
+                        String id = evPastList.get(position).getEvId();
+                        int res = dbHandler.deleteEvent(id);
+                        //if(res == 1){
+                        evPastList.remove(position);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pastAdapter.notifyDataSetChanged();
+                            }
+                        });
+                        //}
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
     }
 
 
-    //Registration receiver
+        //Registration receiver
     BroadcastReceiver mBroadcastReceiver = new BaseRegistrationReceiver()
     {
         @Override
@@ -318,10 +427,15 @@ public class MyEventsActivity extends FragmentActivity {
     }
 
     public void setEventsList(){
-        DatabaseHandler dbHandler = new DatabaseHandler(MyEventsActivity.this);
-        evList = dbHandler.getAllEvents();
-        adapter = new EventsAdapter(MyEventsActivity.this,evList);
-        activeEventsList.setAdapter(adapter);
+        dbHandler = new DatabaseHandler(MyEventsActivity.this);
+
+        evList = dbHandler.getActiveEvents();
+        activeAdapter = new EventsAdapter(MyEventsActivity.this,evList,FOR_ACTIVE_LIST);
+        activeEventsList.setAdapter(activeAdapter);
+
+        evPastList = dbHandler.getPastEvents();
+        pastAdapter = new EventsAdapter(MyEventsActivity.this,evPastList,FOR_PAST_LIST);
+        pastEventsList.setAdapter(pastAdapter);
     }
 
     public class EventsAdapter extends BaseAdapter
@@ -330,14 +444,16 @@ public class MyEventsActivity extends FragmentActivity {
         int darkBack,lightBack;
         Globals global;
         ArrayList<EventDetailDBModel> evList;
+        int which = FOR_ACTIVE_LIST;
 
-        public EventsAdapter(Context c,ArrayList<EventDetailDBModel> evList) {
+        public EventsAdapter(Context c,ArrayList<EventDetailDBModel> evList,int which) {
             inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             darkBack = getResources().getColor(R.color.my_event_list_color_dark);
             lightBack = getResources().getColor(R.color.my_event_list_color_light);
 
             global = (Globals) c.getApplicationContext();
             this.evList = evList;
+            this.which = which;
         }
 
         @Override
@@ -405,6 +521,12 @@ public class MyEventsActivity extends FragmentActivity {
             }catch (Exception e){
                 System.out.println(e.getStackTrace());
                 holder.date.setText("" + dataModel.getStartDate());
+            }
+
+            if(which == FOR_PAST_LIST){
+                holder.prechkBtn.setVisibility(View.GONE);
+            }else{
+                holder.prechkBtn.setVisibility(View.VISIBLE);
             }
 
             holder.prechkBtn.setTag(position);
@@ -488,13 +610,30 @@ public class MyEventsActivity extends FragmentActivity {
             super.onPostExecute(res);
             pd.dismiss();
             if(res.responseStatus == GlobalConstants.ResponseStatus.OK) {
-                Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.succ_pre_chkin), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.succ_pre_chkin), Toast.LENGTH_LONG).show();
+                openSuccessfullPreCheckinDialog();
             }else if(res.responseStatus == GlobalConstants.ResponseStatus.AuthorisationRequired) {
 
             }else if(res.responseStatus == GlobalConstants.ResponseStatus.Fail){
                 Toast.makeText(MyEventsActivity.this, ""+res.message, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void openSuccessfullPreCheckinDialog(){
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MyEventsActivity.this);
+        alertBuilder.setTitle("Pre Checkin");
+        alertBuilder.setMessage(getResources().getString(R.string.succ_pre_chkin));
+        alertBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                preChkDialog.dismiss();
+            }
+        });
+
+        preChkDialog = alertBuilder.create();
+        preChkDialog.show();
     }
 
     public class GetEventDetailsService extends AsyncTask<String,Integer,GlobalConstants.ResponseStatus>{
@@ -529,6 +668,34 @@ public class MyEventsActivity extends FragmentActivity {
             super.onPostExecute(status);
             pd.dismiss();
             if(status == GlobalConstants.ResponseStatus.OK) {
+                try{
+                    DatabaseHandler dbHandler = new DatabaseHandler(MyEventsActivity.this);
+                    EventDetailDBModel dbModel = new EventDetailDBModel();
+                    EventDetailMainModel dataModel = global.getEventDetailMainModel();
+
+                    dbModel.setConfirmCode(confirmationCode);
+                    dbModel.setLastName(lastName);
+                    dbModel.setEvId(dataModel.detailModel.Ev_Id);
+                    dbModel.setEvAddrTxt(dataModel.detailModel.Ev_Addr_1_Txt);
+                    dbModel.setEvCityTxt(dataModel.detailModel.Ev_City_Txt);
+                    dbModel.setEvImgUrl(dataModel.detailModel.Ev_Img_Url);
+                    dbModel.setEvLocTxt(dataModel.detailModel.Ev_Loc_Txt);
+                    dbModel.setEvName(dataModel.detailModel.Ev_Nm);
+                    dbModel.setEnablePrechkIn("" + dataModel.detailModel.Enabl_PreCheckin);
+                    dbModel.setAttendeeId(dataModel.attendeeDetail.Id);
+                    dbModel.setStartDate(dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+                    dbModel.setChkInEndDate(dataModel.detailModel.Ev_Chk_In_End_Dttm);
+                    dbModel.setPreChkInStrtDate(dataModel.detailModel.Ev_Early_Chk_In_Strt_Dttm);
+                    dbModel.setPreChkInEndDate(dataModel.detailModel.Ev_Early_Chk_In_End_Dttm);
+                    dbModel.setEnablCheckin(dataModel.detailModel.Enabl_Checkin);
+                    dbModel.setEventStatus(dataModel.detailModel.Ev_Sts_Cd);
+
+                    dbHandler.addEventDetail(dbModel);
+
+                }catch (Exception e){
+                    Log.e("update",""+e.getStackTrace());
+                }
+
                 startActivity(new Intent(MyEventsActivity.this, HomeActivity.class));
             }else if(status == GlobalConstants.ResponseStatus.AuthorisationRequired) {
 
@@ -537,5 +704,4 @@ public class MyEventsActivity extends FragmentActivity {
             }
         }
     }
-
 }

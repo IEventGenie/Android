@@ -18,7 +18,12 @@ public class EventDetailDBModel {
     String _ev_name = "";
     String _enable_prechk_in = "";
     String _attendee_id = "";
-    String _start_date = "";
+    String _chk_in_start_date = "";
+    String _chk_in_end_date = "";
+    String _pre_chk_in_strt_date = "";
+    String _pre_chk_in_end_date = "";
+    String _enabl_checkin = "";
+    String _ev_status = "";
 
     // Empty constructor
     public EventDetailDBModel(){
@@ -27,7 +32,8 @@ public class EventDetailDBModel {
 
     // constructor
     public EventDetailDBModel(String _id,String _confirm_code,String _last_name,String _ev_id,String _ev_addr_txt,String _ev_city_txt,
-                              String _ev_img_url,String _ev_loc_txt,String _ev_name,String _enable_prechk_in,String _attendee_id,String _start_date){
+                              String _ev_img_url,String _ev_loc_txt,String _ev_name,String _enable_prechk_in,String _attendee_id,String _start_date,
+                              String _chk_in_end_date,String _pre_chk_in_strt_date,String _pre_chk_in_end_date,String _enabl_Checkin,String _ev_status){
         this._id = _id;
         this._confirm_code = _confirm_code;
         this._last_name = _last_name;
@@ -39,7 +45,12 @@ public class EventDetailDBModel {
         this._ev_name = _ev_name;
         this._enable_prechk_in = _enable_prechk_in;
         this._attendee_id = _attendee_id;
-        this._start_date = _start_date;
+        this._chk_in_start_date = _start_date;
+        this._chk_in_end_date = _chk_in_end_date;
+        this._pre_chk_in_strt_date = _pre_chk_in_strt_date;
+        this._pre_chk_in_end_date = _pre_chk_in_end_date;
+        this._enabl_checkin = _enabl_Checkin;
+        this._ev_status = _ev_status;
     }
 
     public void setId(String id) {
@@ -131,11 +142,52 @@ public class EventDetailDBModel {
     }
 
     public String getStartDate() {
-        return _start_date;
+        return _chk_in_start_date;
     }
 
     public void setStartDate(String _start_date) {
-        this._start_date = _start_date;
+        this._chk_in_start_date = _start_date;
     }
+
+    public String getChkInEndDate() {
+        return _chk_in_end_date;
+    }
+
+    public void setChkInEndDate(String _chk_in_end_date) {
+        this._chk_in_end_date = _chk_in_end_date;
+    }
+
+    public String getPreChkInStrtDate() {
+        return _pre_chk_in_strt_date;
+    }
+
+    public void setPreChkInStrtDate(String _pre_chk_in_strt_date) {
+        this._pre_chk_in_strt_date = _pre_chk_in_strt_date;
+    }
+
+    public String getPreChkInEndDate() {
+        return _pre_chk_in_end_date;
+    }
+
+    public void setPreChkInEndDate(String _pre_chk_in_end_date) {
+        this._pre_chk_in_end_date = _pre_chk_in_end_date;
+    }
+
+    public String getEnablCheckin() {
+        return _enabl_checkin;
+    }
+
+    public void setEnablCheckin(String _enabl_Checkin) {
+        this._enabl_checkin = _enabl_Checkin;
+    }
+
+    public String getEventStatus() {
+        return _ev_status;
+    }
+
+    public void setEventStatus(String _ev_status) {
+        this._ev_status = _ev_status;
+    }
+
 
 }

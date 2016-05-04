@@ -1,2 +1,3 @@
-include ':app', ':SlidingMenu'
+include ':app', ':SlidingMenu', ':SwipeListLib'
 project(':SlidingMenu').projectDir = new File('app/libs/SlidingMenu')
+project(':SwipeListLib').projectDir = new File('app/libs/SwipeListLib')
