@@ -14,20 +14,19 @@
     <string name="confirmation_ed_hint">Enter Confirmation Code</string>
     <string name="last_name_ed_hint">Enter Last Name</string>
     <string name="last_name_req_error">Last name required!</string>
-    <string name="confirm_code_req_error">Code required!</string>
+    <string name="confirm_code_req_error">Confirmation Code required!</string>
     <string name="lastname_code_wrong">Lastname or confirmation code is wrong!</string>
-
 
     <!-- My Events -->
     <string name="my_events_title">My Events</string>
     <string name="active_events_tab">Active Events</string>
     <string name="past_events_tab">Past Events</string>
-    <string name="pre_chkin">Pre Checkin</string>
-    <string name="succ_pre_chkin">Successfully Pre Checked in</string>
-    <string name="error_pre_chkin">Error in Pre Check in</string>
+    <string name="pre_chkin">Pre-Checkin</string>
+    <string name="succ_pre_chkin">Successfully Pre-Checked in</string>
+    <string name="error_pre_chkin">Error in Pre-Check in</string>
     <string name="error_getting_details">Error in getting details!</string>
-    <string name="successfull_precheckinmsg">You did Pre Checked in for the Event</string>
-    <!--<string name="seek_to_hint">Please proceed to Pre Checkin Counter for Registration</string>-->
+    <string name="successfull_precheckinmsg">You did Pre-Checkin for the Event</string>
+    <string name="activate_bottom_tab">ACTIVATE EVENTS</string>
 
     <!-- Menu -->
     <string name="logout">LOGOUT</string>
@@ -36,6 +35,7 @@
     <string name="seek_to">Jump To</string>
     <string name="seek_to_hint">Seconds</string>
 
+    <string name="notification_title">Notifications</string>
 
 
 

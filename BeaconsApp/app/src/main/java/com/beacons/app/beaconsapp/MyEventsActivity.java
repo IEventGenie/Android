@@ -31,6 +31,7 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
 import com.beacons.app.WebserviceDataModels.ResponseModel;
 import com.beacons.app.constants.GlobalConstants;
+import com.beacons.app.notificationDb.BeaconNotification;
 import com.beacons.app.notificationDb.DatabaseHandler;
 import com.beacons.app.notificationDb.EventDetailDBModel;
 import com.beacons.app.utilities.CircleTransform;
@@ -41,7 +42,12 @@ import com.pushwoosh.BaseRegistrationReceiver;
 import com.pushwoosh.PushManager;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class MyEventsActivity extends FragmentActivity {
@@ -57,7 +63,8 @@ public class MyEventsActivity extends FragmentActivity {
     final int PastTabConst = 2;
     int CurrentTab = ActiveTabConst;
     Globals global;
-    AlertDialog preChkDialog;
+    AlertDialog preChkDialog,notificationDialog;
+
     ArrayList<EventDetailDBModel> evList;
     ArrayList<EventDetailDBModel> evPastList;
     DatabaseHandler dbHandler;
@@ -96,7 +103,6 @@ public class MyEventsActivity extends FragmentActivity {
         pushManager.registerForPushNotifications();
         checkMessage(getIntent());
 
-        setEventsList();
     }
 
     @Override
@@ -109,6 +115,8 @@ public class MyEventsActivity extends FragmentActivity {
             //Re-register receivers on resume
             registerReceivers();
         }
+
+        setEventsList();
     }
 
     @Override
@@ -325,7 +333,33 @@ public class MyEventsActivity extends FragmentActivity {
         protected void onMessageReceive(Intent intent)
         {
             //JSON_DATA_KEY contains JSON payload of push notification.
-            showMessage("push message is " + intent.getExtras().getString(JSON_DATA_KEY));
+            //showMessage("push message is json key --- " + intent.getExtras().getString(JSON_DATA_KEY));
+            //Log.e("push msg json key",""+intent.getExtras().getString(JSON_DATA_KEY));
+            try {
+                String msg = ""+intent.getExtras().getString(JSON_DATA_KEY);
+                JSONObject job = new JSONObject(msg);
+                String pushTitle = job.getString("title");
+
+                DatabaseHandler dbHandler = new DatabaseHandler(MyEventsActivity.this);
+                BeaconNotification notification = new BeaconNotification();
+                notification.setType(GlobalConstants.PUSHWOOSH_TYPE_PUSH_NOTIFICATION);
+                notification.setTitle(pushTitle);
+                dbHandler.addNotification(notification);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MyEventsActivity.this);
+                builder.setTitle("Notification");
+                builder.setMessage(pushTitle);
+                builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        notificationDialog.dismiss();
+                    }
+                });
+                notificationDialog = builder.create();
+                notificationDialog.show();
+            }catch (Exception e1){
+                Log.e("exceptions : ",""+e1.getStackTrace());
+            }
         }
     };
 
@@ -367,23 +401,24 @@ public class MyEventsActivity extends FragmentActivity {
         {
             if (intent.hasExtra(PushManager.PUSH_RECEIVE_EVENT))
             {
-                showMessage("push message is " + intent.getExtras().getString(PushManager.PUSH_RECEIVE_EVENT));
+                showMessage("push message is recv event ::: " + intent.getExtras().getString(PushManager.PUSH_RECEIVE_EVENT));
+                Log.e("push msg recv event", "" + intent.getExtras().getString(PushManager.PUSH_RECEIVE_EVENT));
             }
             else if (intent.hasExtra(PushManager.REGISTER_EVENT))
             {
-                showMessage("register");
+                //showMessage("register");
             }
             else if (intent.hasExtra(PushManager.UNREGISTER_EVENT))
             {
-                showMessage("unregister");
+                //showMessage("unregister");
             }
             else if (intent.hasExtra(PushManager.REGISTER_ERROR_EVENT))
             {
-                showMessage("register error");
+                //showMessage("register error");
             }
             else if (intent.hasExtra(PushManager.UNREGISTER_ERROR_EVENT))
             {
-                showMessage("unregister error");
+                //showMessage("unregister error");
             }
 
             resetIntentValues();
@@ -445,6 +480,7 @@ public class MyEventsActivity extends FragmentActivity {
         Globals global;
         ArrayList<EventDetailDBModel> evList;
         int which = FOR_ACTIVE_LIST;
+        String currentdate;
 
         public EventsAdapter(Context c,ArrayList<EventDetailDBModel> evList,int which) {
             inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -454,6 +490,7 @@ public class MyEventsActivity extends FragmentActivity {
             global = (Globals) c.getApplicationContext();
             this.evList = evList;
             this.which = which;
+            currentdate = Utilities.getDateTime();
         }
 
         @Override
@@ -482,6 +519,7 @@ public class MyEventsActivity extends FragmentActivity {
                 holder = new ViewHolder();
 
                 holder.eventImg = (ImageView) convertView.findViewById(R.id.event_img);
+                holder.tick_img = (ImageView) convertView.findViewById(R.id.tick_img);
                 holder.title = (TextView) convertView.findViewById(R.id.title);
                 holder.location = (TextView) convertView.findViewById(R.id.location);
                 holder.date = (TextView) convertView.findViewById(R.id.date);
@@ -515,18 +553,64 @@ public class MyEventsActivity extends FragmentActivity {
             }
 
             try {
-                String date = "" + dataModel.getStartDate();
+                String date = "" + dataModel.getEvStartDate();
                 date = date.split("T")[0];
                 holder.date.setText(date);
+
+                String end_date = "" + dataModel.getEvEndDate();
+                end_date = end_date.split("T")[0];
+                holder.date.setText(date+" - "+end_date);
+
             }catch (Exception e){
                 System.out.println(e.getStackTrace());
-                holder.date.setText("" + dataModel.getStartDate());
+                holder.date.setText("" + dataModel.getEvStartDate()+" - "+dataModel.getEvEndDate());
             }
 
             if(which == FOR_PAST_LIST){
                 holder.prechkBtn.setVisibility(View.GONE);
+                holder.tick_img.setVisibility(View.GONE);
             }else{
-                holder.prechkBtn.setVisibility(View.VISIBLE);
+                try {
+                    if(Boolean.parseBoolean(dataModel.getEnablePrechkIn())) {
+                        if (Boolean.parseBoolean(dataModel.getEvPreChkinStatus())) {
+                            holder.prechkBtn.setVisibility(View.GONE);
+                            holder.tick_img.setVisibility(View.VISIBLE);
+                        }else {
+                            //Check pre checkin allowed date
+                            try {
+                                String startdate = dataModel.getPreChkInStrtDate().replace("T", " ");
+                                String enddate = dataModel.getPreChkInEndDate().replace("T", " ");
+                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                                Date start = formatter.parse(startdate);
+                                Date end = formatter.parse(enddate);
+                                Date current = formatter.parse(currentdate);
+
+                                if (current.after(start) && current.before(end)) {
+                                    holder.prechkBtn.setVisibility(View.VISIBLE);
+                                    holder.tick_img.setVisibility(View.GONE);
+                                } else {
+                                    holder.prechkBtn.setVisibility(View.GONE);
+                                    holder.tick_img.setVisibility(View.GONE);
+                                }
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    }else {
+                        if (Boolean.parseBoolean(dataModel.getEvPreChkinStatus())) {
+                            holder.prechkBtn.setVisibility(View.GONE);
+                            holder.tick_img.setVisibility(View.VISIBLE);
+                        }else{
+                            holder.prechkBtn.setVisibility(View.GONE);
+                            holder.tick_img.setVisibility(View.GONE);
+                        }
+                    }
+                }
+                catch (Exception e1) {
+                    holder.prechkBtn.setVisibility(View.GONE);
+                    holder.tick_img.setVisibility(View.GONE);
+                    Log.e("exception","e1 "+e1.getStackTrace());
+                }
             }
 
             holder.prechkBtn.setTag(position);
@@ -534,7 +618,6 @@ public class MyEventsActivity extends FragmentActivity {
 
             return convertView;
         }
-
     }
 
     public View.OnClickListener PreCheckClick = new View.OnClickListener() {
@@ -550,13 +633,13 @@ public class MyEventsActivity extends FragmentActivity {
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Alert");
-        builder.setMessage("Do you want to Pre Checkin for the event?");
+        builder.setMessage("Do you want to Pre-Checkin for the event?");
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 preChkDialog.dismiss();
                 EventDetailDBModel dbModel = evList.get(pos);
-                new ConfirmationCodeService(dbModel.getEvId(),dbModel.getAttendeeId()).execute("");
+                new ConfirmationCodeService(dbModel.getEvId(),dbModel.getAttendeeId(),pos).execute("");
             }
         });
 
@@ -573,7 +656,7 @@ public class MyEventsActivity extends FragmentActivity {
 
     public class ViewHolder
     {
-        ImageView eventImg;
+        ImageView eventImg,tick_img;
         TextView title,location,date,prechkBtn;
     }
 
@@ -581,16 +664,18 @@ public class MyEventsActivity extends FragmentActivity {
 
         ProgressDialog pd;
         String EventId = "",AttendeeId = "";
+        int pos;
 
-        public ConfirmationCodeService(String EventId,String AttendeeId) {
+        public ConfirmationCodeService(String EventId,String AttendeeId,int pos) {
             this.EventId = EventId;
             this.AttendeeId = AttendeeId;
+            this.pos = pos;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd = ProgressDialog.show(MyEventsActivity.this,"","Checking in...");
+            pd = ProgressDialog.show(MyEventsActivity.this,"","Loading...");
         }
 
         @Override
@@ -611,6 +696,14 @@ public class MyEventsActivity extends FragmentActivity {
             pd.dismiss();
             if(res.responseStatus == GlobalConstants.ResponseStatus.OK) {
                 //Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.succ_pre_chkin), Toast.LENGTH_LONG).show();
+                EventDetailDBModel dbModel = evList.get(pos);
+                dbModel.setEvPreChkinStatus("true");
+                DatabaseHandler dbHandler = new DatabaseHandler(MyEventsActivity.this);
+                dbHandler.addEventDetails(dbModel);
+
+                evList = dbHandler.getActiveEvents();
+                activeAdapter.notifyDataSetChanged();
+
                 openSuccessfullPreCheckinDialog();
             }else if(res.responseStatus == GlobalConstants.ResponseStatus.AuthorisationRequired) {
 
@@ -623,7 +716,7 @@ public class MyEventsActivity extends FragmentActivity {
     public void openSuccessfullPreCheckinDialog(){
 
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MyEventsActivity.this);
-        alertBuilder.setTitle("Pre Checkin");
+        alertBuilder.setTitle("Pre-Checkin");
         alertBuilder.setMessage(getResources().getString(R.string.succ_pre_chkin));
         alertBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -683,15 +776,17 @@ public class MyEventsActivity extends FragmentActivity {
                     dbModel.setEvName(dataModel.detailModel.Ev_Nm);
                     dbModel.setEnablePrechkIn("" + dataModel.detailModel.Enabl_PreCheckin);
                     dbModel.setAttendeeId(dataModel.attendeeDetail.Id);
-                    dbModel.setStartDate(dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+                    dbModel.setChkinStartDate(dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
                     dbModel.setChkInEndDate(dataModel.detailModel.Ev_Chk_In_End_Dttm);
                     dbModel.setPreChkInStrtDate(dataModel.detailModel.Ev_Early_Chk_In_Strt_Dttm);
                     dbModel.setPreChkInEndDate(dataModel.detailModel.Ev_Early_Chk_In_End_Dttm);
                     dbModel.setEnablCheckin(dataModel.detailModel.Enabl_Checkin);
                     dbModel.setEventStatus(dataModel.detailModel.Ev_Sts_Cd);
+                    dbModel.setEvStartDate(dataModel.detailModel.Ev_Strt_Dt);
+                    dbModel.setEvEndDate(dataModel.detailModel.Ev_End_Dt);
+                    //dbModel.setEvPreChkinStatus("true");
 
-                    dbHandler.addEventDetail(dbModel);
-
+                    dbHandler.addEventDetails(dbModel);
                 }catch (Exception e){
                     Log.e("update",""+e.getStackTrace());
                 }

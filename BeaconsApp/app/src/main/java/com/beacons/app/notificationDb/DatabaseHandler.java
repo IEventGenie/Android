@@ -43,6 +43,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_PRE_CHKIN_END_DATE = "pre_chk_end_date";
     private static final String KEY_ENABLE_CHKIN = "enable_chk_in";
     private static final String KEY_EVENT_STATUS = "event_status";
+    private static final String KEY_EVENT_PRECHECKED_IN_ST = "event_prechkedin_status";
+    private static final String KEY_EVENT_START_DATE = "event_start_date";
+    private static final String KEY_EVENT_END_DATE = "event_end_date";
 
     // Contacts Table Columns names
     private static final String KEY_TITLE = "title";
@@ -73,7 +76,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_PRE_CHKIN_START_DATE +" TEXT,"+
                 KEY_PRE_CHKIN_END_DATE +" TEXT,"+
                 KEY_ENABLE_CHKIN +" TEXT,"+
-                KEY_EVENT_STATUS +" TEXT "+
+                KEY_EVENT_STATUS +" TEXT,"+
+                KEY_EVENT_PRECHECKED_IN_ST+" TEXT,"+
+                KEY_EVENT_START_DATE+" TEXT,"+
+                KEY_EVENT_END_DATE+" TEXT "+
                 ")";
 
 
@@ -102,14 +108,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // Adding new Event
-    public void addEventDetail(EventDetailDBModel evdet) {
+    public void addEventDetails(EventDetailDBModel evdet) {
 
         ArrayList<EventDetailDBModel> evList = getAllEvents();
         String id = "";
+        String evPrechk = "";
         boolean doInsert = true;
         for(EventDetailDBModel model : evList){
             if(model.getEvId().equals(evdet.getEvId())){
                 id = model.getId();
+                evPrechk = model.getEvPreChkinStatus();
                 doInsert = false;
             }
         }
@@ -127,12 +135,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_EV_NAME, evdet.getEvName());
         values.put(KEY_ENABLE_PRECHECK_IN, evdet.getEnablePrechkIn());
         values.put(KEY_ATTENDEE_ID, evdet.getAttendeeId());
-        values.put(KEY_CHKIN_START_DATE, evdet.getStartDate());
+        values.put(KEY_CHKIN_START_DATE, evdet.getChkinStartDate());
         values.put(KEY_CHKIN_END_DATE, evdet.getChkInEndDate());
         values.put(KEY_PRE_CHKIN_START_DATE, evdet.getPreChkInStrtDate());
         values.put(KEY_PRE_CHKIN_END_DATE, evdet.getPreChkInEndDate());
         values.put(KEY_ENABLE_CHKIN, evdet.getEnablCheckin());
         values.put(KEY_EVENT_STATUS, evdet.getEventStatus());
+        values.put(KEY_EVENT_PRECHECKED_IN_ST, evdet.getEvPreChkinStatus());
+        values.put(KEY_EVENT_START_DATE, evdet.getEvStartDate());
+        values.put(KEY_EVENT_END_DATE, evdet.getEvEndDate());
 
         if(doInsert) {
             // Inserting Row
@@ -142,7 +153,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             //UPDATE
             //add Existing id
             values.put(KEY_ID,id);
-
+            values.put(KEY_EVENT_PRECHECKED_IN_ST,evPrechk);
             String where = KEY_EV_ID+"=?";
             String[] whereArgs = new String[]{String.valueOf(evdet.getEvId())};
             long res = db.update(TABLE_CONFIRM_CODE_EVENTS,values,where,whereArgs);
@@ -182,12 +193,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 event.setEvName(cursor.getString(8));
                 event.setEnablePrechkIn(cursor.getString(9));
                 event.setAttendeeId(cursor.getString(10));
-                event.setStartDate(cursor.getString(11));
+                event.setChkinStartDate(cursor.getString(11));
                 event.setChkInEndDate(cursor.getString(12));
                 event.setPreChkInStrtDate(cursor.getString(13));
                 event.setPreChkInEndDate(cursor.getString(14));
                 event.setEnablCheckin(cursor.getString(15));
                 event.setEventStatus(cursor.getString(16));
+                event.setEvPreChkinStatus(cursor.getString(17));
+                event.setEvStartDate(cursor.getString(18));
+                event.setEvEndDate(cursor.getString(19));
 
                 // Adding events to list
                 eventList.add(event);
@@ -222,12 +236,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 event.setEvName(cursor.getString(8));
                 event.setEnablePrechkIn(cursor.getString(9));
                 event.setAttendeeId(cursor.getString(10));
-                event.setStartDate(cursor.getString(11));
+                event.setChkinStartDate(cursor.getString(11));
                 event.setChkInEndDate(cursor.getString(12));
                 event.setPreChkInStrtDate(cursor.getString(13));
                 event.setPreChkInEndDate(cursor.getString(14));
                 event.setEnablCheckin(cursor.getString(15));
                 event.setEventStatus(cursor.getString(16));
+                event.setEvPreChkinStatus(cursor.getString(17));
+                event.setEvStartDate(cursor.getString(18));
+                event.setEvEndDate(cursor.getString(19));
 
                 // Adding contact to list
                 if(!event.getEventStatus().equals("Closed")) {
@@ -248,7 +265,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
         Cursor cursor = db.query(TABLE_CONFIRM_CODE_EVENTS, new String[] { KEY_ID, KEY_CONFIRMATION_CODE, KEY_LAST_NAME, KEY_EV_ID,
                         KEY_EV_ADDRESS_TXT,KEY_EV_CITY_TXT,KEY_EV_IMG_URL,KEY_EV_LOC_TXT,KEY_EV_NAME,KEY_ENABLE_PRECHECK_IN,KEY_ATTENDEE_ID,
-                        KEY_CHKIN_START_DATE,KEY_CHKIN_END_DATE,KEY_PRE_CHKIN_START_DATE,KEY_PRE_CHKIN_END_DATE,KEY_ENABLE_CHKIN,KEY_EVENT_STATUS}, KEY_EVENT_STATUS + "=?",
+                        KEY_CHKIN_START_DATE,KEY_CHKIN_END_DATE,KEY_PRE_CHKIN_START_DATE,KEY_PRE_CHKIN_END_DATE,KEY_ENABLE_CHKIN,KEY_EVENT_STATUS,KEY_EVENT_PRECHECKED_IN_ST,KEY_EVENT_START_DATE,KEY_EVENT_END_DATE}, KEY_EVENT_STATUS + "=?",
                 new String[] { "Closed" }, null, null, null, null);
 
         if (cursor != null)
@@ -274,12 +291,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 event.setEvName(cursor.getString(8));
                 event.setEnablePrechkIn(cursor.getString(9));
                 event.setAttendeeId(cursor.getString(10));
-                event.setStartDate(cursor.getString(11));
+                event.setChkinStartDate(cursor.getString(11));
                 event.setChkInEndDate(cursor.getString(12));
                 event.setPreChkInStrtDate(cursor.getString(13));
                 event.setPreChkInEndDate(cursor.getString(14));
                 event.setEnablCheckin(cursor.getString(15));
                 event.setEventStatus(cursor.getString(16));
+                event.setEvPreChkinStatus(cursor.getString(17));
+                event.setEvStartDate(cursor.getString(18));
+                event.setEvEndDate(cursor.getString(19));
 
                 // Adding event to list
                 eventList.add(event);

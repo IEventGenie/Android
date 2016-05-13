@@ -24,6 +24,9 @@ public class EventDetailDBModel {
     String _pre_chk_in_end_date = "";
     String _enabl_checkin = "";
     String _ev_status = "";
+    String _ev_pre_chkin_status = "";
+    String _ev_start_date = "";
+    String _ev_end_date = "";
 
     // Empty constructor
     public EventDetailDBModel(){
@@ -31,7 +34,7 @@ public class EventDetailDBModel {
     }
 
     // constructor
-    public EventDetailDBModel(String _id,String _confirm_code,String _last_name,String _ev_id,String _ev_addr_txt,String _ev_city_txt,
+    /*public EventDetailDBModel(String _id,String _confirm_code,String _last_name,String _ev_id,String _ev_addr_txt,String _ev_city_txt,
                               String _ev_img_url,String _ev_loc_txt,String _ev_name,String _enable_prechk_in,String _attendee_id,String _start_date,
                               String _chk_in_end_date,String _pre_chk_in_strt_date,String _pre_chk_in_end_date,String _enabl_Checkin,String _ev_status){
         this._id = _id;
@@ -51,7 +54,7 @@ public class EventDetailDBModel {
         this._pre_chk_in_end_date = _pre_chk_in_end_date;
         this._enabl_checkin = _enabl_Checkin;
         this._ev_status = _ev_status;
-    }
+    }*/
 
     public void setId(String id) {
         _id = id;
@@ -141,11 +144,11 @@ public class EventDetailDBModel {
         this._attendee_id = _attendee_id;
     }
 
-    public String getStartDate() {
+    public String getChkinStartDate() {
         return _chk_in_start_date;
     }
 
-    public void setStartDate(String _start_date) {
+    public void setChkinStartDate(String _start_date) {
         this._chk_in_start_date = _start_date;
     }
 
@@ -189,5 +192,28 @@ public class EventDetailDBModel {
         this._ev_status = _ev_status;
     }
 
+    public String getEvPreChkinStatus() {
+        return _ev_pre_chkin_status;
+    }
+
+    public void setEvPreChkinStatus(String _ev_pre_chkin_status) {
+        this._ev_pre_chkin_status = _ev_pre_chkin_status;
+    }
+
+    public String getEvStartDate() {
+        return _ev_start_date;
+    }
+
+    public void setEvStartDate(String _ev_start_date) {
+        this._ev_start_date = _ev_start_date;
+    }
+
+    public String getEvEndDate() {
+        return _ev_end_date;
+    }
+
+    public void setEvEndDate(String _ev_end_date) {
+        this._ev_end_date = _ev_end_date;
+    }
 
 }

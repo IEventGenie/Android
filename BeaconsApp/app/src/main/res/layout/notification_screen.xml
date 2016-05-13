@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/actionbar"
-        layout="@layout/action_bar_white"
+        layout="@layout/action_bar"
         />
     <ListView
         android:id="@+id/notification_list"

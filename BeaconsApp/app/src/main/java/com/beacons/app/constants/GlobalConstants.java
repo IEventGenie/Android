@@ -177,6 +177,8 @@ public class GlobalConstants {
     public static final String BEACON_TYPE_MEDIA  = "MSCardTypeMedia";
     public static final String BEACON_TYPE_WEBPAGE  = "MSActionTypeWebpage";
 
+    //PushWoosh Notification type
+    public static final String PUSHWOOSH_TYPE_PUSH_NOTIFICATION  = "Pushwoosh_push_notification";
 
 }
 

@@ -108,7 +108,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Activate Events"
+                android:text="@string/activate_bottom_tab"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
                 android:gravity="center"

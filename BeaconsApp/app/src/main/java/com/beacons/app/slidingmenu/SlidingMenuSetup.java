@@ -1,26 +1,22 @@
 package com.beacons.app.slidingmenu;
 
 import android.app.Activity;
-import android.app.ExpandableListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.beacons.app.WebserviceDataModels.AttendeeDetailCommonModel;
 import com.beacons.app.WebserviceDataModels.CategoryCommonModel;
 import com.beacons.app.WebserviceDataModels.CategoryTypeModel;
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
-import com.beacons.app.beaconsapp.BeaconsListActivity;
-import com.beacons.app.beaconsapp.CodeEntryAvtivity;
 import com.beacons.app.beaconsapp.Globals;
-import com.beacons.app.beaconsapp.HomeActivity;
 import com.beacons.app.beaconsapp.MenuDetails;
 import com.beacons.app.beaconsapp.R;
 import com.beacons.app.constants.GlobalConstants;
@@ -43,7 +39,7 @@ public class SlidingMenuSetup {
     ArrayList<String> listDataHeader = new ArrayList<String>();
     HashMap<String, ArrayList<String>> listChildData = new HashMap<String, ArrayList<String>>();
     ImageView eventImg;
-    TextView titleTxt,location,date;
+    TextView titleTxt,location, dateOfEvent,preChkin;
     EventDetailMainModel dataModel;
 
     public SlidingMenuSetup(Activity act) {
@@ -63,6 +59,8 @@ public class SlidingMenuSetup {
         menu.attachToActivity(attachToAct, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu);
 
+        preChkin = (TextView)menu.findViewById(R.id.pre_chkin_btn);
+
         setUpData();
         setEventData();
         return menu;
@@ -77,7 +75,47 @@ public class SlidingMenuSetup {
         TextView name = (TextView)menu.findViewById(R.id.user_name);
         name.setText("" + dataModel.attendeeDetail.FirstName + " " + dataModel.attendeeDetail.LastName);
 
+        if(dataModel.detailModel.Ev_Sts_Cd.equals("Closed")){
+            preChkin.setVisibility(View.INVISIBLE);
+        }
+
+        /*String menu1 = "My Reminders";
+        listDataHeader.add(menu1);
+
+        ArrayList<String> menuListTemp = new ArrayList<String>();
+        int upto = dataModel.categoryDetail.size();
+        for (int i=0;i<upto;i++)
+        {
+            CategoryTypeModel dtModel = dataModel.categoryDetail.get(i);
+            String header = ""+dtModel.categoryDetail.Text;
+            menuListTemp.add(header);
+
+            ArrayList<String> childTexts = new ArrayList<String>();
+            for (CategoryCommonModel model : dtModel.childrenModels) {
+                menuListTemp.add(model.Text);
+            }
+        }
+
+        for (String title : menuListTemp ) {
+            upto = dataModel.attendeeMenuFieldsList.size();
+            for(int i=0;i<upto;i++){
+                String cat = dataModel.attendeeMenuFieldsList.get(i).Category;
+                if(cat.equals(title)){
+                    if(dataModel.attendeeMenuFieldsList.get(i).IsEnabled){
+                        if(!listDataHeader.contains(""+title)){
+                            listDataHeader.add(""+title);
+                        }
+                    }
+                }
+            }
+        }*/
+
         //setUpMenuItems(dataModel);
+
+
+        HashMap<String,String> menuParentChildRelation = new HashMap<String,String>();
+        ArrayList<String> menuChilds = new ArrayList<String>();
+
         int upto = dataModel.categoryDetail.size();
         for (int i=0;i<upto;i++)
         {
@@ -88,10 +126,68 @@ public class SlidingMenuSetup {
             ArrayList<String> childTexts = new ArrayList<String>();
             for (CategoryCommonModel model : dtModel.childrenModels) {
                 childTexts.add(model.Text);
+                menuParentChildRelation.put(model.Text, header);
+                menuChilds.add(model.Text);
             }
-
             listChildData.put(header,childTexts);
         }
+
+        ArrayList<String> listDataHeaderTemp = new ArrayList<String>();
+        HashMap<String,ArrayList<String>> listChildDataTemp = new HashMap<String,ArrayList<String>>();
+
+        for(String tag : listDataHeader) {
+            for (AttendeeDetailCommonModel dtModel : dataModel.attendeeMenuFieldsList) {
+                if (dtModel.Category.equals(tag)) {
+                    if (dtModel.IsEnabled) {
+                        if(listChildData.get(tag).size() == 0){
+                            listDataHeaderTemp.add(tag);
+                        }
+                    }
+                }
+            }
+        }
+
+        for(String childTag : menuChilds) {
+            for (AttendeeDetailCommonModel dtModel : dataModel.attendeeMenuFieldsList) {
+                if (dtModel.Category.equals(childTag)) {
+                    if (dtModel.IsEnabled) {
+                        String parent = menuParentChildRelation.get(childTag);
+                        if (listChildDataTemp.containsKey(parent)) {
+                            ArrayList<String> childList = listChildDataTemp.get(parent);
+                            if(!childList.contains(childTag)) {
+                                childList.add(childTag);
+                                listChildDataTemp.remove(parent);
+                                listChildDataTemp.put(parent, childList);
+                            }
+                        } else {
+                            ArrayList<String> childList = new ArrayList<String>();
+                            childList.add(childTag);
+                            listChildDataTemp.put(parent, childList);
+                        }
+                    }
+                }
+            }
+        }
+
+        for(String header : listDataHeaderTemp){
+            if(!listChildDataTemp.containsKey(header)){
+                listChildDataTemp.put(header,new ArrayList<String>());
+            }
+        }
+
+        listDataHeader.clear();
+        listChildData.clear();
+        //Static Menu
+        //String menu1 = "My Reminders";
+        //listDataHeader.add(menu1);
+        //========
+
+        for ( String key : listChildDataTemp.keySet() ) {
+            listDataHeader.add(key);
+        }
+
+        listChildData = listChildDataTemp;
+        //listChildData.put(menu1, new ArrayList<String>());
 
         MenuExpandableAdapter adapter = new MenuExpandableAdapter(attachToAct,listDataHeader,listChildData);
         menuList.setAdapter(adapter);
@@ -102,10 +198,12 @@ public class SlidingMenuSetup {
 
                 if (listChildData.get(listDataHeader.get(groupPosition)).size() == 0) {
                     //
-                    Intent intent = new Intent(attachToAct, MenuDetails.class);
-                    intent.putExtra(GlobalConstants.SELECTED_MENU, "" + listDataHeader.get(groupPosition));
-                    attachToAct.startActivity(intent);
-                    menu.showContent();
+                    //if(groupPosition > 0){
+                        Intent intent = new Intent(attachToAct, MenuDetails.class);
+                        intent.putExtra(GlobalConstants.SELECTED_MENU, "" + listDataHeader.get(groupPosition));
+                        attachToAct.startActivity(intent);
+                        menu.showContent();
+                    //}
                 }
                 return false;
             }
@@ -122,6 +220,21 @@ public class SlidingMenuSetup {
                 return false;
             }
         });
+
+        /*MenuListAdapter adapter = new MenuListAdapter(attachToAct,listDataHeader);
+        menuList.setAdapter(adapter);
+
+        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position > 0) {
+                    Intent intent = new Intent(attachToAct, MenuDetails.class);
+                    intent.putExtra(GlobalConstants.SELECTED_MENU, "" + listDataHeader.get(position));
+                    attachToAct.startActivity(intent);
+                    menu.showContent();
+                }
+            }
+        });*/
 
         menu.findViewById(R.id.logout_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +255,7 @@ public class SlidingMenuSetup {
             eventImg = (ImageView) menu.findViewById(R.id.event_img);
             titleTxt = (TextView) menu.findViewById(R.id.title_sec);
             location = (TextView) menu.findViewById(R.id.location);
-            date = (TextView) menu.findViewById(R.id.date);
+            dateOfEvent = (TextView) menu.findViewById(R.id.date_of_event);
 
             titleTxt.setText("" + dataModel.detailModel.Ev_Nm);
 
@@ -153,17 +266,65 @@ public class SlidingMenuSetup {
                     .placeholder(R.drawable.icon)
                     .into(eventImg);
             try {
-                String dd = "" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm;
-                dd = dd.split("T")[0];
-                date.setText(dd);
+                String sd = "" + dataModel.detailModel.Ev_Strt_Dt;
+                sd = sd.split("T")[0];
+
+                String ed = "" + dataModel.detailModel.Ev_End_Dt;
+                ed = ed.split("T")[0];
+
+                dateOfEvent.setText(sd + " - " + ed);
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
-                date.setText("" + dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+                dateOfEvent.setText(dataModel.detailModel.Ev_Strt_Dt + " - " + dataModel.detailModel.Ev_End_Dt);
             }
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
         }
     }
+
+    public class MenuListAdapter extends BaseAdapter{
+
+        private Context _context;
+        private ArrayList<String> _listDataHeader;
+
+        public MenuListAdapter(Context context, ArrayList<String> listDataHeader){
+            this._context = context;
+            this._listDataHeader = listDataHeader;
+        }
+
+        @Override
+        public int getCount() {
+            return _listDataHeader.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return _listDataHeader.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            String headerTitle = (String) _listDataHeader.get(position);
+            if (convertView == null) {
+                LayoutInflater infalInflater = (LayoutInflater) this._context
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = infalInflater.inflate(R.layout.menu_list_header, null);
+            }
+
+            TextView lblListHeader = (TextView) convertView
+                    .findViewById(R.id.lblListHeader);
+            //lblListHeader.setTypeface(null, Typeface.BOLD);
+            lblListHeader.setText(headerTitle);
+
+            return convertView;
+        }
+    }
+
 
     public class MenuExpandableAdapter extends BaseExpandableListAdapter{
 

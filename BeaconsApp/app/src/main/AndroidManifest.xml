@@ -94,6 +94,9 @@
             android:exported="false">
         </service>
 
+        <receiver android:name="com.beacons.app.beaconsapp.NotificationReceiver" />
+        <meta-data android:name="PW_NOTIFICATION_RECEIVER" android:value="com.beacons.app.beaconsapp.NotificationReceiver"/>
+
         <activity
             android:name=".SplashScreen"
             android:label="@string/app_name"

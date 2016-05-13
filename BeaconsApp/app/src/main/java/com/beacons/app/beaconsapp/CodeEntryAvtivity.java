@@ -145,16 +145,22 @@ public class CodeEntryAvtivity extends BaseActivity {
         codeEd.setError(null);
         lastEd.setError(null);
 
-        String code = ""+codeEd.getText().toString();
-        if(code.length() == 0){
+        boolean isValid = true;
+
+        String code = "" + codeEd.getText().toString();
+        if (code.length() == 0) {
             codeEd.setError(getResources().getString(R.string.confirm_code_req_error));
-        }else {
-            String lastN = lastEd.getText().toString();
-            if(lastN.length() == 0){
-                lastEd.setError(getResources().getString(R.string.last_name_req_error));
-            }else {
-                new ConfirmationCodeService(code,lastN).execute();
-            }
+            isValid = false;
+        }
+
+        String lastN = lastEd.getText().toString();
+        if (lastN.length() == 0) {
+            lastEd.setError(getResources().getString(R.string.last_name_req_error));
+            isValid = false;
+        }
+
+        if (isValid) {
+            new ConfirmationCodeService(code, lastN).execute();
         }
     }
 
@@ -171,7 +177,7 @@ public class CodeEntryAvtivity extends BaseActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd = ProgressDialog.show(CodeEntryAvtivity.this,"","Verifying...");
+            pd = ProgressDialog.show(CodeEntryAvtivity.this,"","Loading...");
         }
 
         @Override
@@ -204,15 +210,18 @@ public class CodeEntryAvtivity extends BaseActivity {
                     dbModel.setEvName(dataModel.detailModel.Ev_Nm);
                     dbModel.setEnablePrechkIn("" + dataModel.detailModel.Enabl_PreCheckin);
                     dbModel.setAttendeeId(dataModel.attendeeDetail.Id);
-                    dbModel.setStartDate(dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
+                    dbModel.setChkinStartDate(dataModel.detailModel.Ev_Chk_In_Strt_Dttm);
                     dbModel.setChkInEndDate(dataModel.detailModel.Ev_Chk_In_End_Dttm);
                     dbModel.setPreChkInStrtDate(dataModel.detailModel.Ev_Early_Chk_In_Strt_Dttm);
                     dbModel.setPreChkInEndDate(dataModel.detailModel.Ev_Early_Chk_In_End_Dttm);
                     dbModel.setEnablCheckin(dataModel.detailModel.Enabl_Checkin);
                     dbModel.setEventStatus(dataModel.detailModel.Ev_Sts_Cd);
+                    dbModel.setEvPreChkinStatus("false");
+                    dbModel.setEvStartDate(dataModel.detailModel.Ev_Strt_Dt);
+                    dbModel.setEvEndDate(dataModel.detailModel.Ev_End_Dt);
 
                     DatabaseHandler dbHandler = new DatabaseHandler(CodeEntryAvtivity.this);
-                    dbHandler.addEventDetail(dbModel);
+                    dbHandler.addEventDetails(dbModel);
                 }catch (Exception e){
                     Log.e("Inserting ev in db",""+e.getStackTrace());
                 }
