@@ -128,8 +128,24 @@ public class MenuDetails extends BaseActivity {
 
         for (AttendeeDetailCommonModel model : detailList) {
             LinearLayout detailItem = (LinearLayout)inflater.inflate(R.layout.menu_detail_item, null);
-            ((TextView)detailItem.findViewById(R.id.label)).setText(""+model.Label);
-            ((TextView)detailItem.findViewById(R.id.value)).setText(""+model.Value);
+
+            String label = model.Label;
+            String value = model.Value;
+
+            if(label == null){
+                label = "";
+            }else if(label.equals("null")){
+                label = "";
+            }
+
+            if(value == null){
+                value = "";
+            }else if(value.equals("null")){
+                value = "";
+            }
+
+            ((TextView)detailItem.findViewById(R.id.label)).setText(""+label);
+            ((TextView)detailItem.findViewById(R.id.value)).setText(""+value);
 
             detailContainer.addView(detailItem);
         }

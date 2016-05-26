@@ -46,6 +46,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_EVENT_PRECHECKED_IN_ST = "event_prechkedin_status";
     private static final String KEY_EVENT_START_DATE = "event_start_date";
     private static final String KEY_EVENT_END_DATE = "event_end_date";
+    private static final String KEY_EVENT_PRE_CHKIN_STATUS = "event_prechkin_status";
 
     // Contacts Table Columns names
     private static final String KEY_TITLE = "title";
@@ -79,7 +80,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_EVENT_STATUS +" TEXT,"+
                 KEY_EVENT_PRECHECKED_IN_ST+" TEXT,"+
                 KEY_EVENT_START_DATE+" TEXT,"+
-                KEY_EVENT_END_DATE+" TEXT "+
+                KEY_EVENT_END_DATE+" TEXT,"+
+                KEY_EVENT_PRE_CHKIN_STATUS+" TEXT "+
                 ")";
 
 
@@ -144,6 +146,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_EVENT_PRECHECKED_IN_ST, evdet.getEvPreChkinStatus());
         values.put(KEY_EVENT_START_DATE, evdet.getEvStartDate());
         values.put(KEY_EVENT_END_DATE, evdet.getEvEndDate());
+        //values.put(KEY_EVENT_PRE_CHKIN_STATUS, evdet.getPreCheckinStatus());
 
         if(doInsert) {
             // Inserting Row

@@ -27,6 +27,7 @@ public class EventDetailDBModel {
     String _ev_pre_chkin_status = "";
     String _ev_start_date = "";
     String _ev_end_date = "";
+    String _checkin_status = "";
 
     // Empty constructor
     public EventDetailDBModel(){
@@ -214,6 +215,14 @@ public class EventDetailDBModel {
 
     public void setEvEndDate(String _ev_end_date) {
         this._ev_end_date = _ev_end_date;
+    }
+
+    public String getPreCheckinStatus() {
+        return _checkin_status;
+    }
+
+    public void setPreCheckinStatus(String _checkin_status) {
+        this._checkin_status = _checkin_status;
     }
 
 }

@@ -216,7 +216,11 @@ public class CodeEntryAvtivity extends BaseActivity {
                     dbModel.setPreChkInEndDate(dataModel.detailModel.Ev_Early_Chk_In_End_Dttm);
                     dbModel.setEnablCheckin(dataModel.detailModel.Enabl_Checkin);
                     dbModel.setEventStatus(dataModel.detailModel.Ev_Sts_Cd);
-                    dbModel.setEvPreChkinStatus("false");
+                    String preChkStatus = ""+dataModel.attendeeDetail.Status;
+                    if(preChkStatus.length() == 0 || preChkStatus.equals("null")){
+                        preChkStatus = "false";
+                    }
+                    dbModel.setEvPreChkinStatus(preChkStatus);
                     dbModel.setEvStartDate(dataModel.detailModel.Ev_Strt_Dt);
                     dbModel.setEvEndDate(dataModel.detailModel.Ev_End_Dt);
 

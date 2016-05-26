@@ -586,8 +586,13 @@ public class MyEventsActivity extends FragmentActivity {
                                 Date current = formatter.parse(currentdate);
 
                                 if (current.after(start) && current.before(end)) {
-                                    holder.prechkBtn.setVisibility(View.VISIBLE);
-                                    holder.tick_img.setVisibility(View.GONE);
+                                    if(dataModel.getEvPreChkinStatus().equals("false") || dataModel.getEvPreChkinStatus().equals("")){
+                                        holder.prechkBtn.setVisibility(View.VISIBLE);
+                                        holder.tick_img.setVisibility(View.GONE);
+                                    }else{
+                                        holder.prechkBtn.setVisibility(View.GONE);
+                                        holder.tick_img.setVisibility(View.VISIBLE);
+                                    }
                                 } else {
                                     holder.prechkBtn.setVisibility(View.GONE);
                                     holder.tick_img.setVisibility(View.GONE);
@@ -784,7 +789,11 @@ public class MyEventsActivity extends FragmentActivity {
                     dbModel.setEventStatus(dataModel.detailModel.Ev_Sts_Cd);
                     dbModel.setEvStartDate(dataModel.detailModel.Ev_Strt_Dt);
                     dbModel.setEvEndDate(dataModel.detailModel.Ev_End_Dt);
-                    //dbModel.setEvPreChkinStatus("true");
+                    String preChkStatus = ""+dataModel.attendeeDetail.Status;
+                    if(preChkStatus.length() == 0 || preChkStatus.equals("null")){
+                        preChkStatus = "false";
+                    }
+                    dbModel.setEvPreChkinStatus(preChkStatus);
 
                     dbHandler.addEventDetails(dbModel);
                 }catch (Exception e){

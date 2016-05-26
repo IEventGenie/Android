@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -270,8 +271,19 @@ public class HomeActivity extends FragmentActivity {
     public void setWebView(){
         String url = ""+dataModel.detailModel.Ev_Web_Url;
         if(url.length() > 0) {
+
+            if(!url.contains("http")){
+                url = "http://"+url;
+            }
+
+            if(!url.endsWith("/")){
+                url = url+"/";
+            }
+
+            url = url+"username="+ dataModel.attendeeDetail.LastName+"&password="+dataModel.attendeeDetail.ConfirmationCode;
+            Log.e("web url : ",""+url);
             webView = (WebView) findViewById(R.id.web_view);
-            //webView.setWebViewClient(new MyBrowser());
+            webView.setWebViewClient(new MyWebViewClient());
             webView.setWebChromeClient(new MyBrowser());
 
             webView.getSettings().setLoadsImagesAutomatically(true);
@@ -296,6 +308,21 @@ public class HomeActivity extends FragmentActivity {
             }else{
                 HomeActivity.this.progress.setVisibility(View.GONE);
             }
+        }
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            //if (Uri.parse(url).getHost().equals("www.example.com")) {
+                // This is my web site, so do not override; let my WebView load the page
+
+            //}
+            // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
+            /*Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+            return true;*/
+            return false;
         }
     }
 

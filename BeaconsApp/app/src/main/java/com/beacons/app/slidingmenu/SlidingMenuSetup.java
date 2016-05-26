@@ -40,6 +40,7 @@ public class SlidingMenuSetup {
     HashMap<String, ArrayList<String>> listChildData = new HashMap<String, ArrayList<String>>();
     ImageView eventImg;
     TextView titleTxt,location, dateOfEvent,preChkin;
+    ImageView ChkinImg;
     EventDetailMainModel dataModel;
 
     public SlidingMenuSetup(Activity act) {
@@ -60,6 +61,7 @@ public class SlidingMenuSetup {
         menu.setMenu(R.layout.menu);
 
         preChkin = (TextView)menu.findViewById(R.id.pre_chkin_btn);
+        ChkinImg = (ImageView)menu.findViewById(R.id.check_in_img);
 
         setUpData();
         setEventData();
@@ -76,7 +78,19 @@ public class SlidingMenuSetup {
         name.setText("" + dataModel.attendeeDetail.FirstName + " " + dataModel.attendeeDetail.LastName);
 
         if(dataModel.detailModel.Ev_Sts_Cd.equals("Closed")){
-            preChkin.setVisibility(View.INVISIBLE);
+            preChkin.setVisibility(View.GONE);
+            ChkinImg.setVisibility(View.GONE);
+        }else{
+
+            String prechkinstatus = ""+dataModel.attendeeDetail.Status;
+
+            if(prechkinstatus.equalsIgnoreCase("PreCheckin") || prechkinstatus.equalsIgnoreCase("Checkedin")){
+                preChkin.setVisibility(View.GONE);
+                ChkinImg.setVisibility(View.VISIBLE);
+            }else{
+                preChkin.setVisibility(View.VISIBLE);
+                ChkinImg.setVisibility(View.GONE);
+            }
         }
 
         /*String menu1 = "My Reminders";
