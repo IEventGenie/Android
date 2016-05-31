@@ -36,6 +36,7 @@ import com.beacons.app.notificationDb.DatabaseHandler;
 import com.beacons.app.notificationDb.EventDetailDBModel;
 import com.beacons.app.utilities.CircleTransform;
 import com.beacons.app.utilities.Utilities;
+import com.beacons.app.webservices.ResponseParser;
 import com.beacons.app.webservices.WebServiceHandler;
 import com.pushwoosh.BasePushMessageReceiver;
 import com.pushwoosh.BaseRegistrationReceiver;
@@ -166,8 +167,16 @@ public class MyEventsActivity extends FragmentActivity {
         activeEventsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 EventDetailDBModel model = evList.get(position);
-                new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
+                if(Utilities.isInternetAvailable(MyEventsActivity.this)){
+                    new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
+                }else{
+                    EventDetailMainModel resultModel = ResponseParser.parseResponseOfEventDetails(""+model.getEventDetailJson());
+                    global.setEventDetailMainModel(resultModel);
+                    global.setEventDetailJson("" + model.getEventDetailJson());
+                    startActivity(new Intent(MyEventsActivity.this, HomeActivity.class));
+                }
             }
         });
 
@@ -175,7 +184,14 @@ public class MyEventsActivity extends FragmentActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 EventDetailDBModel model = evPastList.get(position);
-                new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
+                if(Utilities.isInternetAvailable(MyEventsActivity.this)){
+                    new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
+                }else{
+                    EventDetailMainModel resultModel = ResponseParser.parseResponseOfEventDetails(""+model.getEventDetailJson());
+                    global.setEventDetailMainModel(resultModel);
+                    global.setEventDetailJson("" + model.getEventDetailJson());
+                    startActivity(new Intent(MyEventsActivity.this, HomeActivity.class));
+                }
             }
         });
 
@@ -526,7 +542,6 @@ public class MyEventsActivity extends FragmentActivity {
                 holder.prechkBtn = (TextView) convertView.findViewById(R.id.pre_chk_btn);
 
                 convertView.setTag(holder);
-
             }else{
                 holder = (ViewHolder) convertView.getTag();
             }
@@ -794,6 +809,7 @@ public class MyEventsActivity extends FragmentActivity {
                         preChkStatus = "false";
                     }
                     dbModel.setEvPreChkinStatus(preChkStatus);
+                    dbModel.setEventDetailJson(global.getEventDetailJson());
 
                     dbHandler.addEventDetails(dbModel);
                 }catch (Exception e){

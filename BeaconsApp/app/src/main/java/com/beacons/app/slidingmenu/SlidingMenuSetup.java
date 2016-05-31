@@ -192,8 +192,8 @@ public class SlidingMenuSetup {
         listDataHeader.clear();
         listChildData.clear();
         //Static Menu
-        //String menu1 = "My Reminders";
-        //listDataHeader.add(menu1);
+        String menu1 = "My Event";
+        listDataHeader.add(menu1);
         //========
 
         for ( String key : listChildDataTemp.keySet() ) {
@@ -201,7 +201,7 @@ public class SlidingMenuSetup {
         }
 
         listChildData = listChildDataTemp;
-        //listChildData.put(menu1, new ArrayList<String>());
+        listChildData.put(menu1, new ArrayList<String>());
 
         MenuExpandableAdapter adapter = new MenuExpandableAdapter(attachToAct,listDataHeader,listChildData);
         menuList.setAdapter(adapter);
@@ -212,12 +212,14 @@ public class SlidingMenuSetup {
 
                 if (listChildData.get(listDataHeader.get(groupPosition)).size() == 0) {
                     //
-                    //if(groupPosition > 0){
+                    if(groupPosition == 0){
+                        attachToAct.finish();
+                    }else{
                         Intent intent = new Intent(attachToAct, MenuDetails.class);
                         intent.putExtra(GlobalConstants.SELECTED_MENU, "" + listDataHeader.get(groupPosition));
                         attachToAct.startActivity(intent);
                         menu.showContent();
-                    //}
+                    }
                 }
                 return false;
             }

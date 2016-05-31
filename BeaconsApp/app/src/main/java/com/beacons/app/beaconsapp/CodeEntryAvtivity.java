@@ -223,6 +223,7 @@ public class CodeEntryAvtivity extends BaseActivity {
                     dbModel.setEvPreChkinStatus(preChkStatus);
                     dbModel.setEvStartDate(dataModel.detailModel.Ev_Strt_Dt);
                     dbModel.setEvEndDate(dataModel.detailModel.Ev_End_Dt);
+                    dbModel.setEventDetailJson(global.getEventDetailJson());
 
                     DatabaseHandler dbHandler = new DatabaseHandler(CodeEntryAvtivity.this);
                     dbHandler.addEventDetails(dbModel);

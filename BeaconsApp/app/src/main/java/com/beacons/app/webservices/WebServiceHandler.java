@@ -88,6 +88,7 @@ public class WebServiceHandler {
                 if(eventDet != null && eventDet.length() > 0){
                     EventDetailMainModel resultModel = ResponseParser.parseResponseOfEventDetails(contentAsString);
                     global.setEventDetailMainModel(resultModel);
+                    global.setEventDetailJson(contentAsString);
                     returnStatus = GlobalConstants.ResponseStatus.OK;
                 }else{
                     returnStatus = GlobalConstants.ResponseStatus.Fail;

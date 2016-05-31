@@ -280,7 +280,7 @@ public class HomeActivity extends FragmentActivity {
                 url = url+"/";
             }
 
-            url = url+"username="+ dataModel.attendeeDetail.LastName+"&password="+dataModel.attendeeDetail.ConfirmationCode;
+            //url = url+"username="+ dataModel.attendeeDetail.LastName+"&password="+dataModel.attendeeDetail.ConfirmationCode;
             Log.e("web url : ",""+url);
             webView = (WebView) findViewById(R.id.web_view);
             webView.setWebViewClient(new MyWebViewClient());

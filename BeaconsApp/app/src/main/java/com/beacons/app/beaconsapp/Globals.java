@@ -22,6 +22,15 @@ public class Globals extends Application {
     public void setEventDetailMainModel(EventDetailMainModel eventDetailMainModel) {
         this.eventDetailMainModel = eventDetailMainModel;
     }
+
+    String EventDetailJson = "";
+    public void setEventDetailJson(String json){
+        EventDetailJson = json;
+    }
+
+    public String getEventDetailJson(){
+        return EventDetailJson;
+    }
     //===========
 
     //Beacons Work==

@@ -110,7 +110,8 @@ public class ScannerActivity extends Activity
                 try {
                     if(isFlashOn) {
                         mCamera.stopPreview();
-                        mCamera.setPreviewCallback(null);
+                        mPreview.getHolder().removeCallback(mPreview);
+                        //mCamera.setPreviewCallback(null);
 
                         Parameters params = mCamera.getParameters();
                         params.setFlashMode(Parameters.FLASH_MODE_OFF);
@@ -122,7 +123,8 @@ public class ScannerActivity extends Activity
                         isFlashOn = false;
                     }else{
                         mCamera.stopPreview();
-                        mCamera.setPreviewCallback(null);
+                        mPreview.getHolder().removeCallback(mPreview);
+                        //mCamera.setPreviewCallback(null);
 
                         Parameters params = mCamera.getParameters();
                         params.setFlashMode(Parameters.FLASH_MODE_TORCH);
@@ -137,7 +139,8 @@ public class ScannerActivity extends Activity
                 catch(Exception e){
                     Log.e("ex on flash",""+e.getStackTrace());
                     previewing = false;
-                    mCamera.setPreviewCallback(null);
+                    mPreview.getHolder().removeCallback(mPreview);
+                    //mCamera.setPreviewCallback(null);
                     mCamera.release();
                     mCamera = null;
 
@@ -183,7 +186,8 @@ public class ScannerActivity extends Activity
     private void releaseCamera() {
         if (mCamera != null) {
             previewing = false;
-            mCamera.setPreviewCallback(null);
+            mPreview.getHolder().removeCallback(mPreview);
+            //mCamera.setPreviewCallback(null);
             mCamera.release();
             mCamera = null;
         }
@@ -209,7 +213,8 @@ public class ScannerActivity extends Activity
 
             if (result != 0) {
                 previewing = false;
-                mCamera.setPreviewCallback(null);
+                mPreview.getHolder().removeCallback(mPreview);
+                //mCamera.setPreviewCallback(null);
                 mCamera.stopPreview();
 
                 SymbolSet syms = scanner.getResults();

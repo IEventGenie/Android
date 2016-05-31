@@ -47,6 +47,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_EVENT_START_DATE = "event_start_date";
     private static final String KEY_EVENT_END_DATE = "event_end_date";
     private static final String KEY_EVENT_PRE_CHKIN_STATUS = "event_prechkin_status";
+    private static final String KEY_EVENT_DETAIL_JSON = "event_detail_json";
 
     // Contacts Table Columns names
     private static final String KEY_TITLE = "title";
@@ -81,7 +82,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_EVENT_PRECHECKED_IN_ST+" TEXT,"+
                 KEY_EVENT_START_DATE+" TEXT,"+
                 KEY_EVENT_END_DATE+" TEXT,"+
-                KEY_EVENT_PRE_CHKIN_STATUS+" TEXT "+
+                //KEY_EVENT_PRE_CHKIN_STATUS+" TEXT,"+
+                KEY_EVENT_DETAIL_JSON+" TEXT "+
                 ")";
 
 
@@ -112,6 +114,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Adding new Event
     public void addEventDetails(EventDetailDBModel evdet) {
 
+        SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<EventDetailDBModel> evList = getAllEvents();
         String id = "";
         String evPrechk = "";
@@ -123,8 +126,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 doInsert = false;
             }
         }
-
-        SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_CONFIRMATION_CODE, evdet.getConfirmCode());
@@ -146,14 +147,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_EVENT_PRECHECKED_IN_ST, evdet.getEvPreChkinStatus());
         values.put(KEY_EVENT_START_DATE, evdet.getEvStartDate());
         values.put(KEY_EVENT_END_DATE, evdet.getEvEndDate());
-        //values.put(KEY_EVENT_PRE_CHKIN_STATUS, evdet.getPreCheckinStatus());
+        //values.put(KEY_EVENT_PRE_CHKIN_STATUS, evdet.getEvPreChkinStatus());
+        String jsontosave = evdet.getEventDetailJson();
+        values.put(KEY_EVENT_DETAIL_JSON, jsontosave);
 
         if(doInsert) {
             // Inserting Row
             long res = db.insert(TABLE_CONFIRM_CODE_EVENTS, null, values);
             db.close(); // Closing database connection
         }else{
-            //UPDATE
+            //UPDATE ROW
             //add Existing id
             values.put(KEY_ID,id);
             values.put(KEY_EVENT_PRECHECKED_IN_ST,evPrechk);
@@ -205,6 +208,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 event.setEvPreChkinStatus(cursor.getString(17));
                 event.setEvStartDate(cursor.getString(18));
                 event.setEvEndDate(cursor.getString(19));
+                //event.setPreCheckinStatus(cursor.getString(20));
+                event.setEventDetailJson(cursor.getString(20));
 
                 // Adding events to list
                 eventList.add(event);
@@ -248,6 +253,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 event.setEvPreChkinStatus(cursor.getString(17));
                 event.setEvStartDate(cursor.getString(18));
                 event.setEvEndDate(cursor.getString(19));
+                //event.setPreCheckinStatus(cursor.getString(20));
+                event.setEventDetailJson(cursor.getString(20));
 
                 // Adding contact to list
                 if(!event.getEventStatus().equals("Closed")) {
@@ -268,7 +275,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
         Cursor cursor = db.query(TABLE_CONFIRM_CODE_EVENTS, new String[] { KEY_ID, KEY_CONFIRMATION_CODE, KEY_LAST_NAME, KEY_EV_ID,
                         KEY_EV_ADDRESS_TXT,KEY_EV_CITY_TXT,KEY_EV_IMG_URL,KEY_EV_LOC_TXT,KEY_EV_NAME,KEY_ENABLE_PRECHECK_IN,KEY_ATTENDEE_ID,
-                        KEY_CHKIN_START_DATE,KEY_CHKIN_END_DATE,KEY_PRE_CHKIN_START_DATE,KEY_PRE_CHKIN_END_DATE,KEY_ENABLE_CHKIN,KEY_EVENT_STATUS,KEY_EVENT_PRECHECKED_IN_ST,KEY_EVENT_START_DATE,KEY_EVENT_END_DATE}, KEY_EVENT_STATUS + "=?",
+                        KEY_CHKIN_START_DATE,KEY_CHKIN_END_DATE,KEY_PRE_CHKIN_START_DATE,KEY_PRE_CHKIN_END_DATE,KEY_ENABLE_CHKIN,KEY_EVENT_STATUS,KEY_EVENT_PRECHECKED_IN_ST,KEY_EVENT_START_DATE,KEY_EVENT_END_DATE,KEY_EVENT_DETAIL_JSON}, KEY_EVENT_STATUS + "=?",
                 new String[] { "Closed" }, null, null, null, null);
 
         if (cursor != null)
@@ -303,6 +310,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 event.setEvPreChkinStatus(cursor.getString(17));
                 event.setEvStartDate(cursor.getString(18));
                 event.setEvEndDate(cursor.getString(19));
+                event.setEventDetailJson(cursor.getString(20));
 
                 // Adding event to list
                 eventList.add(event);

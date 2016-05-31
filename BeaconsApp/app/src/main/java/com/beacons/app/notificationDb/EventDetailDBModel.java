@@ -28,6 +28,7 @@ public class EventDetailDBModel {
     String _ev_start_date = "";
     String _ev_end_date = "";
     String _checkin_status = "";
+    String _event_detail_json = "";
 
     // Empty constructor
     public EventDetailDBModel(){
@@ -225,4 +226,10 @@ public class EventDetailDBModel {
         this._checkin_status = _checkin_status;
     }
 
+    public void setEventDetailJson(String json){
+        this._event_detail_json = json;
+    }
+    public String getEventDetailJson(){
+        return _event_detail_json;
+    }
 }
