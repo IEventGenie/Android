@@ -22,6 +22,7 @@ import com.beacons.app.constants.GlobalConstants;
 import com.beacons.app.notificationDb.DatabaseHandler;
 import com.beacons.app.notificationDb.EventDetailDBModel;
 import com.beacons.app.qrcodescanner.ScannerActivity;
+import com.beacons.app.utilities.Utilities;
 import com.beacons.app.webservices.WebServiceHandler;
 import com.mobstac.beaconstac.utils.MSException;
 
@@ -160,7 +161,11 @@ public class CodeEntryAvtivity extends BaseActivity {
         }
 
         if (isValid) {
-            new ConfirmationCodeService(code, lastN).execute();
+            if(Utilities.isInternetAvailable(this)) {
+                new ConfirmationCodeService(code, lastN).execute();
+            }else{
+                Toast.makeText(CodeEntryAvtivity.this, getResources().getString(R.string.internet_unavailable),Toast.LENGTH_LONG).show();
+            }
         }
     }
 

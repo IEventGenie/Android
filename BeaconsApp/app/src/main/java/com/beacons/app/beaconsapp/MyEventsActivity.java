@@ -170,11 +170,13 @@ public class MyEventsActivity extends FragmentActivity {
 
                 EventDetailDBModel model = evList.get(position);
                 if(Utilities.isInternetAvailable(MyEventsActivity.this)){
+                    global.setEventDetailDBModel(evList.get(position));
                     new GetEventDetailsService(model.getConfirmCode(),model.getLastName()).execute("");
                 }else{
                     EventDetailMainModel resultModel = ResponseParser.parseResponseOfEventDetails(""+model.getEventDetailJson());
                     global.setEventDetailMainModel(resultModel);
                     global.setEventDetailJson("" + model.getEventDetailJson());
+                    global.setEventDetailDBModel(evList.get(position));
                     startActivity(new Intent(MyEventsActivity.this, HomeActivity.class));
                 }
             }
@@ -595,7 +597,7 @@ public class MyEventsActivity extends FragmentActivity {
                             try {
                                 String startdate = dataModel.getPreChkInStrtDate().replace("T", " ");
                                 String enddate = dataModel.getPreChkInEndDate().replace("T", " ");
-                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Date start = formatter.parse(startdate);
                                 Date end = formatter.parse(enddate);
                                 Date current = formatter.parse(currentdate);
@@ -610,7 +612,7 @@ public class MyEventsActivity extends FragmentActivity {
                                     }
                                 } else {
                                     holder.prechkBtn.setVisibility(View.GONE);
-                                    holder.tick_img.setVisibility(View.GONE);
+                                    holder.tick_img.setVisibility(View.VISIBLE);
                                 }
                             } catch (ParseException e1) {
                                 e1.printStackTrace();
@@ -657,9 +659,13 @@ public class MyEventsActivity extends FragmentActivity {
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                preChkDialog.dismiss();
+            preChkDialog.dismiss();
+            if(Utilities.isInternetAvailable(MyEventsActivity.this)) {
                 EventDetailDBModel dbModel = evList.get(pos);
                 new ConfirmationCodeService(dbModel.getEvId(),dbModel.getAttendeeId(),pos).execute("");
+            }else{
+                Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.internet_unavailable),Toast.LENGTH_LONG).show();
+            }
             }
         });
 

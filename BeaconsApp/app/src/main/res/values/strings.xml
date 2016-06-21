@@ -5,6 +5,7 @@
     <string name="label_device_name">Device Name</string>
     <string name="label_device_address">Device Address</string>
 
+    <string name="internet_unavailable">Unable to connect, Please check your internet connection !</string>
 
     <!-- activate event screen -->
     <string name="activate_event">ACTIVATE EVENT</string>

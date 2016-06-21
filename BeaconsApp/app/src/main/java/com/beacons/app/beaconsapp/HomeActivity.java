@@ -35,6 +35,7 @@ import com.pushwoosh.PushManager;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 
 public class HomeActivity extends FragmentActivity {
@@ -51,6 +52,10 @@ public class HomeActivity extends FragmentActivity {
     LinearLayout webviewLay;
     TextView noWebText;
     AlertDialog notificationDialog;
+    LinearLayout noWebContent;
+    ImageView evImgBig;
+    TextView evNameText,evAddrText;
+    WebView mapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +74,7 @@ public class HomeActivity extends FragmentActivity {
         actionBar.findViewById(R.id.notification_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this,NotificationListAvticity.class));
+                startActivity(new Intent(HomeActivity.this, NotificationListAvticity.class));
             }
         });
 
@@ -88,6 +93,12 @@ public class HomeActivity extends FragmentActivity {
         webviewLay = (LinearLayout) findViewById(R.id.web_view_lay);
         noWebText = (TextView) findViewById(R.id.no_web_text);
 
+        noWebContent = (LinearLayout) findViewById(R.id.no_web_content);
+        evImgBig = (ImageView) findViewById(R.id.ev_img);
+        evNameText = (TextView) findViewById(R.id.title_text);
+        evAddrText = (TextView) findViewById(R.id.address_text);
+        mapView = (WebView) findViewById(R.id.map_web_view);
+
         dataModel = global.getEventDetailMainModel();
 
         progress = (ProgressBar) findViewById(R.id.progressBar);
@@ -95,8 +106,6 @@ public class HomeActivity extends FragmentActivity {
 
         setWebView();
         setEventData();
-
-
     }
 
     @Override
@@ -121,6 +130,15 @@ public class HomeActivity extends FragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
         global.fragActivityDestroyed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(menu.isMenuShowing()){
+            menu.showContent();
+        }else{
+            super.onBackPressed();
+        }
     }
 
     //Registration receiver
@@ -280,7 +298,13 @@ public class HomeActivity extends FragmentActivity {
                 url = url+"/";
             }
 
-            //url = url+"username="+ dataModel.attendeeDetail.LastName+"&password="+dataModel.attendeeDetail.ConfirmationCode;
+            //url = url+"?username="+ dataModel.attendeeDetail.LastName+"&?password="+dataModel.attendeeDetail.ConfirmationCode;
+
+            url = url+"?username="+ dataModel.attendeeDetail.LastName+"&?password="+dataModel.attendeeDetail.ConfirmationCode+
+                    "&phone="+dataModel.attendeeDetail.PhoneNumber+ "&fname="+dataModel.attendeeDetail.FirstName+"&lname="+
+                    dataModel.attendeeDetail.LastName+"&email="+dataModel.attendeeDetail.Email+"&confirm_code=1234"+"&city="+
+                    dataModel.attendeeDetail.City+"&country="+dataModel.attendeeDetail.State;
+
             Log.e("web url : ",""+url);
             webView = (WebView) findViewById(R.id.web_view);
             webView.setWebViewClient(new MyWebViewClient());
@@ -292,9 +316,26 @@ public class HomeActivity extends FragmentActivity {
             webView.loadUrl(url);
 
             progress.setProgress(0);
-            noWebText.setVisibility(View.GONE);
+
+            noWebContent.setVisibility(View.GONE);
+            webviewLay.setVisibility(View.VISIBLE);
         }else{
-            noWebText.setVisibility(View.VISIBLE);
+            noWebContent.setVisibility(View.VISIBLE);
+            webviewLay.setVisibility(View.GONE);
+
+            Picasso.with(HomeActivity.this).load("" + dataModel.detailModel.Ev_Img_Url).into(evImgBig);
+            evNameText.setText("" + dataModel.detailModel.Ev_Nm);
+            evAddrText.setText("" + dataModel.detailModel.Ev_Addr_1_Txt + "," + dataModel.detailModel.Ev_City_Txt);
+
+            String mapurl = "https://www.google.co.in/maps/place/"+evAddrText.getText().toString();
+            Log.e("Map URL",""+mapurl);
+            mapView.setWebViewClient(new MyWebViewClient());
+            mapView.setWebChromeClient(new MyBrowser());
+
+            mapView.getSettings().setLoadsImagesAutomatically(true);
+            mapView.getSettings().setJavaScriptEnabled(true);
+            mapView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+            mapView.loadUrl(mapurl);
         }
     }
 

@@ -152,6 +152,54 @@
             android:visibility="gone"
             />
 
+        <LinearLayout
+            android:id="@+id/no_web_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ev_img"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                />
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="EV Title"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/pre_chk_text_color"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                />
+
+
+            <TextView
+                android:id="@+id/address_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="EV Adddr"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="@color/pre_chk_text_color"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="3dp"
+                />
+
+            <WebView
+                android:id="@+id/map_web_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"/>
+
+
+        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>

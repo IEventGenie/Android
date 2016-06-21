@@ -244,13 +244,12 @@ public class BeaconsDetector {
 
         @Override
         public void rangedBeacons(Context context, ArrayList<MSBeacon> rangedBeacons) {
-            beacons.addAll(rangedBeacons);
+             beacons.addAll(rangedBeacons);
         }
 
         @Override
         public void campedOnBeacon(Context context, MSBeacon beacon) {
             System.out.println(""+beacon.getId());
-            
         }
 
         @Override

@@ -1,8 +1,13 @@
 package com.beacons.app.slidingmenu;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +16,22 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beacons.app.WebserviceDataModels.AttendeeDetailCommonModel;
 import com.beacons.app.WebserviceDataModels.CategoryCommonModel;
 import com.beacons.app.WebserviceDataModels.CategoryTypeModel;
 import com.beacons.app.WebserviceDataModels.EventDetailMainModel;
+import com.beacons.app.WebserviceDataModels.ResponseModel;
 import com.beacons.app.beaconsapp.Globals;
 import com.beacons.app.beaconsapp.MenuDetails;
 import com.beacons.app.beaconsapp.R;
 import com.beacons.app.constants.GlobalConstants;
+import com.beacons.app.notificationDb.DatabaseHandler;
+import com.beacons.app.notificationDb.EventDetailDBModel;
 import com.beacons.app.utilities.CircleTransform;
+import com.beacons.app.utilities.Utilities;
+import com.beacons.app.webservices.WebServiceHandler;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.squareup.picasso.Picasso;
 
@@ -42,6 +53,8 @@ public class SlidingMenuSetup {
     TextView titleTxt,location, dateOfEvent,preChkin;
     ImageView ChkinImg;
     EventDetailMainModel dataModel;
+    AlertDialog preChkDialog;
+    EventDetailDBModel dataDBModel;
 
     public SlidingMenuSetup(Activity act) {
         attachToAct = act;
@@ -72,7 +85,8 @@ public class SlidingMenuSetup {
 
         menuList = (ExpandableListView)menu.findViewById(R.id.menu_list);
 
-        EventDetailMainModel dataModel = global.getEventDetailMainModel();
+        dataModel = global.getEventDetailMainModel();
+        dataDBModel = global.getEventDetailDBModel();
 
         TextView name = (TextView)menu.findViewById(R.id.user_name);
         name.setText("" + dataModel.attendeeDetail.FirstName + " " + dataModel.attendeeDetail.LastName);
@@ -92,6 +106,13 @@ public class SlidingMenuSetup {
                 ChkinImg.setVisibility(View.GONE);
             }
         }
+
+        preChkin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPreCheckinDialog();
+            }
+        });
 
         /*String menu1 = "My Reminders";
         listDataHeader.add(menu1);
@@ -228,7 +249,6 @@ public class SlidingMenuSetup {
         menuList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-
                 Intent intent = new Intent(attachToAct, MenuDetails.class);
                 intent.putExtra(GlobalConstants.SELECTED_MENU, "" + listChildData.get(listDataHeader.get(groupPosition)).get(childPosition));
                 attachToAct.startActivity(intent);
@@ -432,6 +452,101 @@ public class SlidingMenuSetup {
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
         }
+    }
+
+
+    public void showPreCheckinDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(attachToAct);
+        builder.setTitle("Alert");
+        builder.setMessage("Do you want to Pre-Checkin for the event?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                preChkDialog.dismiss();
+                if(Utilities.isInternetAvailable(attachToAct)) {
+                    new ConfirmationCodeService(dataDBModel.getEvId(), dataDBModel.getAttendeeId()).execute("");
+                }else{
+                    Toast.makeText(attachToAct, attachToAct.getResources().getString(R.string.internet_unavailable), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                preChkDialog.dismiss();
+            }
+        });
+
+        preChkDialog = builder.create();
+        preChkDialog.show();
+    }
+
+    public class ConfirmationCodeService extends AsyncTask<String,Integer,ResponseModel> {
+
+        ProgressDialog pd;
+        String EventId = "",AttendeeId = "";
+
+        public ConfirmationCodeService(String EventId,String AttendeeId) {
+            this.EventId = EventId;
+            this.AttendeeId = AttendeeId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = ProgressDialog.show(attachToAct,"","Loading...");
+        }
+
+        @Override
+        protected ResponseModel doInBackground(String... params) {
+            ResponseModel returnModel = new ResponseModel();
+            returnModel.responseStatus = GlobalConstants.ResponseStatus.Fail;
+            try {
+                returnModel = WebServiceHandler.submitPreCheckinEvent(attachToAct, EventId, AttendeeId);
+            }catch (Exception e){
+                Log.e("Exception : ", e.getStackTrace().toString());
+            }
+            return returnModel;
+        }
+
+        @Override
+        protected void onPostExecute(ResponseModel res) {
+            super.onPostExecute(res);
+            pd.dismiss();
+            if(res.responseStatus == GlobalConstants.ResponseStatus.OK) {
+                //Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.succ_pre_chkin), Toast.LENGTH_LONG).show();
+                dataDBModel.setEvPreChkinStatus("true");
+                DatabaseHandler dbHandler = new DatabaseHandler(attachToAct);
+                dbHandler.addEventDetails(dataDBModel);
+
+                preChkin.setVisibility(View.GONE);
+                ChkinImg.setVisibility(View.VISIBLE);
+
+                openSuccessfullPreCheckinDialog();
+            }else if(res.responseStatus == GlobalConstants.ResponseStatus.AuthorisationRequired) {
+
+            }else if(res.responseStatus == GlobalConstants.ResponseStatus.Fail){
+                Toast.makeText(attachToAct, "" + res.message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public void openSuccessfullPreCheckinDialog(){
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(attachToAct);
+        alertBuilder.setTitle("Pre-Checkin");
+        alertBuilder.setMessage(attachToAct.getResources().getString(R.string.succ_pre_chkin));
+        alertBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                preChkDialog.dismiss();
+            }
+        });
+
+        preChkDialog = alertBuilder.create();
+        preChkDialog.show();
     }
 
 }

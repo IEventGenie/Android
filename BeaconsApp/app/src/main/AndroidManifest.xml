@@ -122,18 +122,18 @@
 
         <activity android:name=".NotificationListAvticity" android:screenOrientation="portrait"></activity>
 
-        <receiver android:name="com.beacons.app.beacons.BeaconstacBroadcastReceiver" android:exported="false">
-            <intent-filter>
-                <action android:name="com.mobstac.beaconstac.intent.action.RANGED_BEACON" />
-                <action android:name="com.mobstac.beaconstac.intent.action.CAMPED_BEACON" />
-                <action android:name="com.mobstac.beaconstac.intent.action.EXITED_BEACON" />
-                <action android:name="com.mobstac.beaconstac.intent.action.TRIGGERED_RULE" />
-                <action android:name="com.mobstac.beaconstac.intent.action.ENTERED_REGION" />
-                <action android:name="com.mobstac.beaconstac.intent.action.EXITED_REGION" />
-                <action android:name="com.mobstac.beaconstac.intent.action.ENTERED_GEOFENCE" />
-                <action android:name="com.mobstac.beaconstac.intent.action.EXITED_GEOFENCE" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver android:name="com.beacons.app.beacons.BeaconstacBroadcastReceiver" android:exported="false">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.RANGED_BEACON" />-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.CAMPED_BEACON" />-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.EXITED_BEACON" />-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.TRIGGERED_RULE" />-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.ENTERED_REGION" />-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.EXITED_REGION" />-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.ENTERED_GEOFENCE" />-->
+                <!--<action android:name="com.mobstac.beaconstac.intent.action.EXITED_GEOFENCE" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <service android:name="com.mobstac.beaconstac.core.MSBLEService" android:enabled="true"/>
         <service android:name="com.mobstac.beaconstac.core.MSGeofenceTransitionIntentService" />

@@ -20,7 +20,8 @@ public class GlobalConstants {
     //==========
 
     //URLS====
-    public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
+    //public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
+    public static final String BASE_URL = "http://www.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
     public static final String GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL = "GetAllEventAttendeeDetailByConfirmationCode";
     public static final String SUBMIT_PRE_CHECKIN_URL = "SubmitPreCheckin";
     public static final String CHECKIN_WITH_CONFIRMATION_CODE_URL = "CheckinWithConfirmation";
