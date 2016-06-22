@@ -117,12 +117,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<EventDetailDBModel> evList = getAllEvents();
         String id = "";
-        String evPrechk = "";
+        //String evPrechk = "";
         boolean doInsert = true;
         for(EventDetailDBModel model : evList){
             if(model.getEvId().equals(evdet.getEvId())){
                 id = model.getId();
-                evPrechk = model.getEvPreChkinStatus();
+                //evPrechk = model.getEvPreChkinStatus();
                 doInsert = false;
             }
         }
@@ -159,7 +159,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             //UPDATE ROW
             //add Existing id
             values.put(KEY_ID,id);
-            values.put(KEY_EVENT_PRECHECKED_IN_ST,evPrechk);
+            //values.put(KEY_EVENT_PRECHECKED_IN_ST,evPrechk);
             String where = KEY_EV_ID+"=?";
             String[] whereArgs = new String[]{String.valueOf(evdet.getEvId())};
             long res = db.update(TABLE_CONFIRM_CODE_EVENTS,values,where,whereArgs);

@@ -20,8 +20,8 @@ public class GlobalConstants {
     //==========
 
     //URLS====
-    //public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
-    public static final String BASE_URL = "http://www.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
+    public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
+    //public static final String BASE_URL = "http://www.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
     public static final String GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL = "GetAllEventAttendeeDetailByConfirmationCode";
     public static final String SUBMIT_PRE_CHECKIN_URL = "SubmitPreCheckin";
     public static final String CHECKIN_WITH_CONFIRMATION_CODE_URL = "CheckinWithConfirmation";
@@ -180,6 +180,10 @@ public class GlobalConstants {
 
     //PushWoosh Notification type
     public static final String PUSHWOOSH_TYPE_PUSH_NOTIFICATION  = "Pushwoosh_push_notification";
+
+    //Pre checkin Status
+    public static final String STATUS_PRE_CHK_IN  = "PreCheckin";
+    public static final String STATUS_CHECKED_IN  = "Checkedin";
 
 }
 

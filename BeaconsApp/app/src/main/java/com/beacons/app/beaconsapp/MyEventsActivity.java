@@ -589,37 +589,35 @@ public class MyEventsActivity extends FragmentActivity {
             }else{
                 try {
                     if(Boolean.parseBoolean(dataModel.getEnablePrechkIn())) {
-                        if (Boolean.parseBoolean(dataModel.getEvPreChkinStatus())) {
-                            holder.prechkBtn.setVisibility(View.GONE);
-                            holder.tick_img.setVisibility(View.VISIBLE);
-                        }else {
-                            //Check pre checkin allowed date
-                            try {
-                                String startdate = dataModel.getPreChkInStrtDate().replace("T", " ");
-                                String enddate = dataModel.getPreChkInEndDate().replace("T", " ");
-                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                Date start = formatter.parse(startdate);
-                                Date end = formatter.parse(enddate);
-                                Date current = formatter.parse(currentdate);
+                        //Check pre checkin allowed date
+                        try {
+                            String startdate = dataModel.getPreChkInStrtDate().replace("T", " ");
+                            String enddate = dataModel.getPreChkInEndDate().replace("T", " ");
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            Date start = formatter.parse(startdate);
+                            Date end = formatter.parse(enddate);
+                            Date current = formatter.parse(currentdate);
 
-                                if (current.after(start) && current.before(end)) {
-                                    if(dataModel.getEvPreChkinStatus().equals("false") || dataModel.getEvPreChkinStatus().equals("")){
-                                        holder.prechkBtn.setVisibility(View.VISIBLE);
-                                        holder.tick_img.setVisibility(View.GONE);
-                                    }else{
-                                        holder.prechkBtn.setVisibility(View.GONE);
-                                        holder.tick_img.setVisibility(View.VISIBLE);
-                                    }
-                                } else {
+                            if (current.after(start) && current.before(end)) {
+                                if(dataModel.getEvPreChkinStatus().equals(GlobalConstants.STATUS_PRE_CHK_IN) ||
+                                        dataModel.getEvPreChkinStatus().equals(GlobalConstants.STATUS_CHECKED_IN)){
                                     holder.prechkBtn.setVisibility(View.GONE);
                                     holder.tick_img.setVisibility(View.VISIBLE);
+                                }else{
+                                    holder.prechkBtn.setVisibility(View.VISIBLE);
+                                    holder.tick_img.setVisibility(View.GONE);
                                 }
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
+                            } else {
+                                holder.prechkBtn.setVisibility(View.GONE);
+                                holder.tick_img.setVisibility(View.VISIBLE);
                             }
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
                         }
+
                     }else {
-                        if (Boolean.parseBoolean(dataModel.getEvPreChkinStatus())) {
+                        if(dataModel.getEvPreChkinStatus().equals(GlobalConstants.STATUS_PRE_CHK_IN) ||
+                                dataModel.getEvPreChkinStatus().equals(GlobalConstants.STATUS_CHECKED_IN)){
                             holder.prechkBtn.setVisibility(View.GONE);
                             holder.tick_img.setVisibility(View.VISIBLE);
                         }else{
@@ -723,7 +721,7 @@ public class MyEventsActivity extends FragmentActivity {
             if(res.responseStatus == GlobalConstants.ResponseStatus.OK) {
                 //Toast.makeText(MyEventsActivity.this, getResources().getString(R.string.succ_pre_chkin), Toast.LENGTH_LONG).show();
                 EventDetailDBModel dbModel = evList.get(pos);
-                dbModel.setEvPreChkinStatus("true");
+                dbModel.setEvPreChkinStatus(GlobalConstants.STATUS_PRE_CHK_IN);
                 DatabaseHandler dbHandler = new DatabaseHandler(MyEventsActivity.this);
                 dbHandler.addEventDetails(dbModel);
 

@@ -35,7 +35,10 @@ import com.beacons.app.webservices.WebServiceHandler;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -55,10 +58,12 @@ public class SlidingMenuSetup {
     EventDetailMainModel dataModel;
     AlertDialog preChkDialog;
     EventDetailDBModel dataDBModel;
+    String currentdate;
 
     public SlidingMenuSetup(Activity act) {
         attachToAct = act;
         global = (Globals) act.getApplicationContext();
+        currentdate = Utilities.getDateTime();
     }
 
     public SlidingMenu setSlidingMenu()
@@ -96,7 +101,7 @@ public class SlidingMenuSetup {
             ChkinImg.setVisibility(View.GONE);
         }else{
 
-            String prechkinstatus = ""+dataModel.attendeeDetail.Status;
+            /*String prechkinstatus = ""+dataModel.attendeeDetail.Status;
 
             if(prechkinstatus.equalsIgnoreCase("PreCheckin") || prechkinstatus.equalsIgnoreCase("Checkedin")){
                 preChkin.setVisibility(View.GONE);
@@ -104,7 +109,51 @@ public class SlidingMenuSetup {
             }else{
                 preChkin.setVisibility(View.VISIBLE);
                 ChkinImg.setVisibility(View.GONE);
+            }*/
+
+            try {
+                if(Boolean.parseBoolean(dataModel.detailModel.Enabl_PreCheckin)) {
+                    try {
+                        String startdate = dataModel.detailModel.Ev_Early_Chk_In_Strt_Dttm.replace("T", " ");
+                        String enddate = dataModel.detailModel.Ev_Early_Chk_In_End_Dttm.replace("T", " ");
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date start = formatter.parse(startdate);
+                        Date end = formatter.parse(enddate);
+                        Date current = formatter.parse(currentdate);
+
+                        if (current.after(start) && current.before(end)) {
+                            if(dataModel.attendeeDetail.Status.equals(GlobalConstants.STATUS_PRE_CHK_IN) ||
+                                    dataModel.attendeeDetail.Status.equals(GlobalConstants.STATUS_CHECKED_IN)){
+                                preChkin.setVisibility(View.GONE);
+                                ChkinImg.setVisibility(View.VISIBLE);
+                            }else{
+                                preChkin.setVisibility(View.VISIBLE);
+                                ChkinImg.setVisibility(View.GONE);
+                            }
+                        } else {
+                            preChkin.setVisibility(View.GONE);
+                            ChkinImg.setVisibility(View.VISIBLE);
+                        }
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                }else {
+                    if(dataModel.attendeeDetail.Status.equals(GlobalConstants.STATUS_PRE_CHK_IN) ||
+                            dataModel.attendeeDetail.Status.equals(GlobalConstants.STATUS_CHECKED_IN)){
+                        preChkin.setVisibility(View.GONE);
+                        ChkinImg.setVisibility(View.VISIBLE);
+                    }else{
+                        preChkin.setVisibility(View.VISIBLE);
+                        ChkinImg.setVisibility(View.GONE);
+                    }
+                }
             }
+            catch (Exception e1) {
+                preChkin.setVisibility(View.GONE);
+                ChkinImg.setVisibility(View.GONE);
+                Log.e("exception","e1 "+e1.getStackTrace());
+            }
+
         }
 
         preChkin.setOnClickListener(new View.OnClickListener() {
