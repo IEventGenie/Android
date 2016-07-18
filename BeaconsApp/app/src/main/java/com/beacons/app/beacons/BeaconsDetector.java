@@ -39,6 +39,9 @@ import com.mobstac.beaconstac.models.MSAction;
 import com.mobstac.beaconstac.models.MSBeacon;
 import com.mobstac.beaconstac.models.MSCard;
 import com.mobstac.beaconstac.models.MSMedia;
+import com.mobstac.beaconstac.models.MSSQLiteOpenHelper;
+import com.mobstac.beaconstac.models.MSTag;
+import com.mobstac.beaconstac.models.MSTagData;
 import com.mobstac.beaconstac.utils.MSException;
 import com.mobstac.beaconstac.utils.MSLogger;
 
@@ -65,6 +68,7 @@ public class BeaconsDetector {
     public DatabaseHandler databaseHandler;
     Globals global;
     public static BeaconsDetector INSTANCE;
+    ArrayList<MSTagData> tagDataList = new ArrayList<MSTagData>();
 
     public static BeaconsDetector getInstance() {
         if(INSTANCE == null){
@@ -109,6 +113,15 @@ public class BeaconsDetector {
         bstacInstance = Beaconstac.getInstance(global.fragActivity);
         bstacInstance.setRegionParams("F94DBB23-2266-7822-3782-57BEAC0952AC", "com.beacons.app.beaconsapp");
         bstacInstance.syncRules();
+        bstacInstance.syncTags();
+        tagDataList = MSSQLiteOpenHelper.getInstance(global.fragActivity.getApplicationContext()).getAllTags();
+
+        //bstacInstance.setUserFacts();
+
+        //MSSQLiteOpenHelper.getInstance(mContext.getApplicationContext()).getAllTags();
+
+        //MSTagData msTagData;
+        //msTagData.getBeacons();
 
         // if location is enabled
         LocationManager locManager = (LocationManager) global.fragActivity.getSystemService(Context.LOCATION_SERVICE);
@@ -166,6 +179,7 @@ public class BeaconsDetector {
             }
         }
         isPopupVisible = false;
+
     }
 
     public void activityDestroyed(){
@@ -249,7 +263,28 @@ public class BeaconsDetector {
 
         @Override
         public void campedOnBeacon(Context context, MSBeacon beacon) {
-            System.out.println(""+beacon.getId());
+            String campedBId = ""+beacon.getId();
+            String TagName = "";
+            for (MSTagData tgData : tagDataList) {
+                String beacons = tgData.getBeacons();
+                String []beaconsIds = beacons.split(",");
+                boolean isMatched = false;
+                for (String bId : beaconsIds) {
+                    if(bId.equals(campedBId)){
+                        isMatched = true;
+                        break;
+                    }
+                }
+                if(isMatched){
+                    TagName = ""+tgData.getName();
+                }
+            }
+
+            if(TagName.equals("EntryBeaconTest")){
+                Log.e("matched","Do Auto Entry");
+            }else if(TagName.equals("ExitBeaconTest")){
+                Log.e("matched","Do Auto Exit");
+            }
         }
 
         @Override

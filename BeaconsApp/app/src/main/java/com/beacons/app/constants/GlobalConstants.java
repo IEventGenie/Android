@@ -20,17 +20,18 @@ public class GlobalConstants {
     //==========
 
     //URLS====
-    public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
-    //public static final String BASE_URL = "http://www.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
+    //public static final String BASE_URL = "https://dev.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
+    public static final String BASE_URL = "http://www.icheckingenie.com/DesktopModules/CheckinService/API/iCheckinEvents/";
     public static final String GET_ALL_EVENT_DETAILS_CONFIRMATION_CODE_URL = "GetAllEventAttendeeDetailByConfirmationCode";
     public static final String SUBMIT_PRE_CHECKIN_URL = "SubmitPreCheckin";
     public static final String CHECKIN_WITH_CONFIRMATION_CODE_URL = "CheckinWithConfirmation";
     public static final String CHECKOUT_WITH_CONFIRMATION_CODE_URL = "CheckoutWithConfirmation";
     //========
 
-    //=======
+    //========
     public static final String SELECTED_MENU = "selected_menu";
-    //=======
+    //========
+
     //URL Constants===
     public static final String CONFIRMATION_CODE_PARAM = "confirmationCode";
     public static final String LAST_NAME_PARAM = "lastName";

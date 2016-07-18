@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.beacons.app.beaconsapp">
+    package="com.beacons.app.beaconsapp"
+    >
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -52,7 +53,8 @@
         android:supportsRtl="true"
         android:largeHeap="true"
         android:name=".Globals"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        >
 
         <meta-data android:name="PW_APPID" android:value="70C21-84EA1" />
         <meta-data android:name="PW_PROJECT_ID" android:value="A922367254091" />

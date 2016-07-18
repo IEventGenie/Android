@@ -300,7 +300,7 @@ public class HomeActivity extends FragmentActivity {
 
             //url = url+"?username="+ dataModel.attendeeDetail.LastName+"&?password="+dataModel.attendeeDetail.ConfirmationCode;
 
-            url = url+"?username="+ dataModel.attendeeDetail.LastName+"&?password="+dataModel.attendeeDetail.ConfirmationCode+
+            url = url+"?username="+ dataModel.attendeeDetail.LastName+"&password="+dataModel.attendeeDetail.ConfirmationCode+
                     "&phone="+dataModel.attendeeDetail.PhoneNumber+ "&fname="+dataModel.attendeeDetail.FirstName+"&lname="+
                     dataModel.attendeeDetail.LastName+"&email="+dataModel.attendeeDetail.Email+"&confirm_code=1234"+"&city="+
                     dataModel.attendeeDetail.City+"&country="+dataModel.attendeeDetail.State;
